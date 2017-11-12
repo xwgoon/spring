@@ -1,0 +1,16 @@
+group 'com.myapp'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.springframework:spring-context:5.0.0.RELEASE'
+
+    compile 'org.hibernate.validator:hibernate-validator:6.0.4.Final'  //自动下载javax.validation:validation-api:2.0.0.Final
+    compile 'org.glassfish:javax.el:3.0.0'
+
+}

@@ -2,12 +2,11 @@ group 'com.myapp'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
-apply plugin: 'war'
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    compile project(':service')
+    compile project(':data')
 }

@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:c="http://www.springframework.org/schema/c"
+       xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--<context:annotation-config/>-->
+
+    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
+
+    <!--<bean class="config.DataConfig"/>-->
+
+    <!--<context:component-scan base-package="com.myapp,config"/>-->
+
+    <!--<bean id="user0" class="com.myapp.data.model.User">-->
+        <!--<property name="resource" value="spring/prop.properties"/>-->
+    <!--</bean>-->
+
+    <!--<bean id="addressDao" class="com.myapp.data.dao.AddressDao"/>-->
+
+    <!--<bean id="test1" class="com.myapp.data.model.Test1"/>-->
+
+    <!--<bean id="addressDao2" class="com.myapp.data.dao.AddressDao"/>-->
+
+    <bean id="address" name="address" class="com.myapp.data.model.Address">
+        <property name="id" value="1"/>
+    </bean>
+
+    <!--静态内部类-->
+    <!--<bean id="identityCard" class="com.myapp.data.model.User.IdentityCard">-->
+        <!--<property name="number" value="5102387492837492384"/>-->
+    <!--</bean>-->
+
+    <!--bean实例化的三种方式-->
+    <!--1.构造方法-->
+    <!--<bean id="userDao1" name="userDao1Alias" class="com.myapp.data.dao.UserDao">-->
+    <!--</bean>-->
+    <!--2.静态工厂方法-->
+    <!--<bean id="userDao2" class="com.myapp.data.dao.UserDao" factory-method="staticCreateMethod" primary="true">-->
+    <!--</bean>-->
+    <!--3.实例工厂方法-->
+    <!--<bean id="userDao3" factory-bean="userDao1" factory-method="instanceCreateMethod"/>-->
+
+    <!--依赖注入的四种方式-->
+    <!--1.构造方法-->
+    <!--<bean id="user1" class="com.myapp.data.model.User" init-method="myInit" destroy-method="myDestroy">-->
+        <!--<constructor-arg name="id" value="1"/>-->
+        <!--<constructor-arg name="mobile" value="13857649586"/>-->
+        <!--<constructor-arg name="name" value="user1"/>-->
+    <!--</bean>-->
+    <!--2.静态工厂方法-->
+    <!--<bean id="user2" class="com.myapp.data.model.User" factory-method="staticCreateMethod">-->
+        <!--<constructor-arg name="id" value="2"/>-->
+        <!--<constructor-arg name="name" value="user2"/>-->
+        <!--<constructor-arg name="mobile" value="15867584353"/>-->
+    <!--</bean>-->
+    <!--3.实例工厂方法-->
+    <!--<bean id="user3" factory-bean="user1" factory-method="instanceCreateMethod">-->
+        <!--<constructor-arg name="id" value="3"/>-->
+        <!--<constructor-arg name="name" value="user3"/>-->
+        <!--<constructor-arg name="mobile" value="15867584353"/>-->
+    <!--</bean>-->
+    <!--4.set方法-->
+    <!--<bean id="user4" class="com.myapp.data.model.User">-->
+        <!--<property name="id" value="4"/>-->
+        <!--<property name="name" value="user4"/>-->
+        <!--<property name="mobile" value="15867584353"/>-->
+        <!--&lt;!&ndash;<property name="address" ref="address"/>&ndash;&gt;-->
+        <!--<property name="address">-->
+            <!--<bean class="com.myapp.data.model.Address">-->
+                <!--<property name="id" value="2"/>-->
+                <!--<property name="address" value="春熙路"/>-->
+            <!--</bean>-->
+        <!--</property>-->
+    <!--</bean>-->
+    <!--<bean id="user5" class="com.myapp.data.model.User"-->
+          <!--p:id="5"-->
+          <!--p:name="user5"/>-->
+
+    <!--注入Properties-->
+    <!--<bean id="user6" class="com.myapp.data.model.User">-->
+        <!--<property name="properties">-->
+            <!--<value>-->
+                <!--id=6-->
+                <!--name=user6-->
+            <!--</value>-->
+        <!--</property>-->
+    <!--</bean>-->
+
+    <!--<bean id="user7" class="com.myapp.data.model.User">-->
+        <!--<property name="list">-->
+            <!--<list>-->
+                <!--<value>listValue1</value>-->
+                <!--<value>listValue2</value>-->
+            <!--</list>-->
+        <!--</property>-->
+
+        <!--<property name="set">-->
+            <!--<set>-->
+                <!--<value>setValue1</value>-->
+                <!--<value>setValue2</value>-->
+            <!--</set>-->
+        <!--</property>-->
+
+        <!--<property name="map">-->
+            <!--<map>-->
+                <!--<entry key="1" value="mapValue1"/>-->
+                <!--<entry key="2" value="mapValue2"/>-->
+            <!--</map>-->
+        <!--</property>-->
+
+        <!--<property name="properties">-->
+            <!--&lt;!&ndash;<props>&ndash;&gt;-->
+            <!--&lt;!&ndash;<prop key="propKey1">propValue1</prop>&ndash;&gt;-->
+            <!--&lt;!&ndash;<prop key="propKey2">propValue2</prop>&ndash;&gt;-->
+            <!--&lt;!&ndash;</props>&ndash;&gt;-->
+            <!--<value>-->
+                <!--propKey3=propValue3-->
+                <!--propKey4=propValue4-->
+            <!--</value>-->
+        <!--</property>-->
+    <!--</bean>-->
+
+    <!--<bean id="parentUser" abstract="true" class="com.myapp.data.model.User">-->
+        <!--<property name="id" value="1"/>-->
+        <!--<property name="name" value="Tom"/>-->
+        <!--<property name="address" ref="address"/>-->
+        <!--<property name="properties">-->
+            <!--<props>-->
+                <!--<prop key="administrator">administrator@example.com</prop>-->
+                <!--<prop key="support">support@example.com</prop>-->
+            <!--</props>-->
+        <!--</property>-->
+        <!--<property name="list">-->
+            <!--<list>-->
+                <!--<value>b</value>-->
+                <!--<value>a</value>-->
+            <!--</list>-->
+        <!--</property>-->
+        <!--<property name="set">-->
+            <!--<set>-->
+                <!--<value>b</value>-->
+                <!--<value>a</value>-->
+            <!--</set>-->
+        <!--</property>-->
+        <!--<property name="map">-->
+            <!--<map>-->
+                <!--<entry key="1" value="a"/>-->
+                <!--<entry key="2" value="b"/>-->
+            <!--</map>-->
+        <!--</property>-->
+    <!--</bean>-->
+
+    <!--<bean id="childUser" parent="parentUser">-->
+        <!--<property name="name" value=""/>-->
+        <!--<property name="address">-->
+            <!--<null/>-->
+        <!--</property>-->
+
+        <!--<property name="list">-->
+            <!--<list merge="true">-->
+                <!--<value>b</value>-->
+                <!--<value>c</value>-->
+            <!--</list>-->
+        <!--</property>-->
+
+        <!--<property name="set">-->
+            <!--<set merge="true">-->
+                <!--<value>b</value>-->
+                <!--<value>c</value>-->
+            <!--</set>-->
+        <!--</property>-->
+
+        <!--<property name="map">-->
+            <!--<map merge="true">-->
+                <!--<entry key="1" value="c"/>-->
+                <!--<entry key="3" value="d"/>-->
+            <!--</map>-->
+        <!--</property>-->
+
+        <!--<property name="properties">-->
+            <!--<props merge="true">-->
+                <!--<prop key="sales">sales@example.com</prop>-->
+                <!--<prop key="support">support@example.co.uk</prop>-->
+            <!--</props>-->
+        <!--</property>-->
+    <!--</bean>-->
+
+    <!--<bean id="user8" class="com.myapp.data.model.User"-->
+          <!--p:name="user8"-->
+          <!--p:address-ref="address"-->
+    <!--/>-->
+
+    <!--<bean id="user9" class="com.myapp.data.model.User"-->
+          <!--c:name="user9"-->
+          <!--c:address-ref="address"-->
+    <!--/>-->
+    <!--&lt;!&ndash;<bean id="user9" class="com.myapp.data.model.User"&ndash;&gt;-->
+    <!--&lt;!&ndash;c:_0="user9"&ndash;&gt;-->
+    <!--&lt;!&ndash;c:_1-ref="address"&ndash;&gt;-->
+    <!--&lt;!&ndash;/>&ndash;&gt;-->
+
+    <!--<bean id="user10" class="com.myapp.data.model.User" parent="user9">-->
+        <!--<property name="name" value="user10"/>-->
+        <!--&lt;!&ndash;<property name="address.address" value="春熙路"/>&ndash;&gt;-->
+    <!--</bean>-->
+
+    <!--<context:property-placeholder location="classpath:spring/prop.properties" system-properties-mode="NEVER"/>-->
+
+    <!--<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" p:systemPropertiesMode="0">-->
+        <!--<property name="locations" value="classpath:spring/prop.properties"/>-->
+        <!--<property name="properties">-->
+            <!--<value>-->
+                <!--userName=李四-->
+                <!--userMobile=13123456789-->
+            <!--</value>-->
+        <!--</property>-->
+    <!--</bean>-->
+
+    <!--<bean id="user11" class="com.myapp.data.model.User">-->
+        <!--<property name="id" value="${userId}"/>-->
+        <!--<property name="name" value="${userName}"/>-->
+        <!--<property name="mobile" value="${userMobile}"/>-->
+    <!--</bean>-->
+
+    <!--<context:property-override location="classpath:spring/prop.properties"/>-->
+    <!--<bean id="user12" class="com.myapp.data.model.User"/>-->
+
+    <!--<bean id="test1" name="test1_alias" class="com.myapp.data.model.Test1"/>-->
+
+</beans>

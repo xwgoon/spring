@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <import resource="data.xml"/>
+
+
+    <!--<bean id="propertyEditorSample" class="com.myapp.service.propertyEditor.DependsOnExoticType">-->
+        <!--<property name="type" value="aNameForExoticType"/>-->
+    <!--</bean>-->
+
+    <!--<bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">-->
+        <!--<property name="customEditors">-->
+            <!--<map>-->
+                <!--<entry key="com.myapp.service.propertyEditor.ExoticType" value="com.myapp.service.propertyEditor.ExoticTypeEditor"/>-->
+            <!--</map>-->
+        <!--</property>-->
+    <!--</bean>-->
+
+    <!--<bean id="eventService" class="com.myapp.service.event.EventService">-->
+        <!--<property name="blackList">-->
+            <!--<list>-->
+                <!--<value>a</value>-->
+                <!--<value>b</value>-->
+                <!--<value>c</value>-->
+            <!--</list>-->
+        <!--</property>-->
+    <!--</bean>-->
+
+    <!--<bean id="blackListNotifier1" class="com.myapp.service.event.BlackListNotifier1"/>-->
+
+    <!--<bean id="blackListNotifier2" class="com.myapp.service.event.BlackListNotifier2"/>-->
+
+    <!--<alias name="userDao1" alias="myUserDao"/>-->
+
+    <!--<bean id="userService" class="com.myapp.service.user.UserServiceImpl">-->
+        <!--<constructor-arg name="userDao" ref="userDao1"/>-->
+    <!--</bean>-->
+
+    <!--<bean id="userService2" class="com.myapp.service.user.UserServiceImpl">-->
+        <!--<constructor-arg name="addressDao" ref="addressDao"/>-->
+        <!--<constructor-arg name="userDao" ref="userDao1"/>-->
+    <!--</bean>-->
+
+    <!--<bean id="userService" class="com.myapp.service.user.UserServiceImpl">-->
+    <!--</bean>-->
+
+</beans>
