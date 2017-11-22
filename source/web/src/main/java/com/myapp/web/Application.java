@@ -12,23 +12,25 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.expression.EvaluationContext;
+import org.springframework.expression.Expression;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Set;
 
-//@Component
 public class Application {
-
-//    @Autowired
-//    private static UserService userService;
 
     public static void main(String[] args) {
 
-        ApplicationContext context = new ClassPathXmlApplicationContext("spring/application.xml");
+//        ApplicationContext context = new ClassPathXmlApplicationContext("spring/application.xml");
 //        ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
 
 //        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
@@ -36,14 +38,14 @@ public class Application {
 //        context.register(AppConfig.class);
 //        context.refresh();
 
-        Address address = context.getBean("address", Address.class);
+//        Address address = context.getBean("address", Address.class);
 //        address.setAddress("123");
-        System.out.println(address);
+//        System.out.println(address);
 
-        Validator validator = context.getBean("validator", Validator.class);
-        Set<ConstraintViolation<Address>> constraintViolations = validator.validate(address);
-        System.out.println(constraintViolations);
-        System.out.println(constraintViolations.iterator().next().getMessage());
+//        Validator validator = context.getBean("validator", Validator.class);
+//        Set<ConstraintViolation<Address>> constraintViolations = validator.validate(address);
+//        System.out.println(constraintViolations);
+//        System.out.println(constraintViolations.iterator().next().getMessage());
 
 
 //        System.out.println(context.getBean("propertyEditorSample", DependsOnExoticType.class).getType());
@@ -128,6 +130,25 @@ public class Application {
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
+//        ExpressionParser parser = new SpelExpressionParser();
+//        Expression exp = parser.parseExpression("'Hello World'.toUpperCase()");
+//        Object message = exp.getValue();
+//
+//        System.out.println(message);
+
+        // Create and set a calendar
+        GregorianCalendar c = new GregorianCalendar();
+        c.set(1856, 7, 9);
+
+// The constructor arguments are name, birthday, and nationality.
+        User user = new User("张三");
+
+        ExpressionParser parser = new SpelExpressionParser();
+        Expression exp = parser.parseExpression("name == '张三'");
+
+//        EvaluationContext context = new StandardEvaluationContext(user);
+//        String name = (String) exp.getValue(user);
+        System.out.println(exp.getValue(user));
 
     }
 }

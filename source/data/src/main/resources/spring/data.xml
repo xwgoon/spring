@@ -8,7 +8,7 @@
 
     <!--<context:annotation-config/>-->
 
-    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
+    <!--<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>-->
 
     <!--<bean class="config.DataConfig"/>-->
 
@@ -24,9 +24,9 @@
 
     <!--<bean id="addressDao2" class="com.myapp.data.dao.AddressDao"/>-->
 
-    <bean id="address" name="address" class="com.myapp.data.model.Address">
-        <property name="id" value="1"/>
-    </bean>
+    <!--<bean id="address" name="address" class="com.myapp.data.model.Address">-->
+        <!--<property name="id" value="1"/>-->
+    <!--</bean>-->
 
     <!--静态内部类-->
     <!--<bean id="identityCard" class="com.myapp.data.model.User.IdentityCard">-->
