@@ -24,9 +24,15 @@
 
     <!--<bean id="addressDao2" class="com.myapp.data.dao.AddressDao"/>-->
 
-    <!--<bean id="address" name="address" class="com.myapp.data.model.Address">-->
-        <!--<property name="id" value="1"/>-->
-    <!--</bean>-->
+    <bean id="address0" name="address0" class="com.myapp.data.model.Address">
+        <!--<property name="randomNumber" value="#{T(java.lang.Math).random() * 100.0}"/>-->
+        <!--<property name="defaultLocale" value="#{systemProperties['user.timezone']}"/>-->
+    </bean>
+
+    <bean id="address1" name="address1" class="com.myapp.data.model.Address">
+        <property name="randomNumber" value="#{T(java.lang.Math).random() * 100.0}"/>
+        <property name="defaultLocale" value="#{address0.defaultLocale}"/>
+    </bean>
 
     <!--静态内部类-->
     <!--<bean id="identityCard" class="com.myapp.data.model.User.IdentityCard">-->

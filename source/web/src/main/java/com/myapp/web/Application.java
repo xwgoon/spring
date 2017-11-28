@@ -1,30 +1,17 @@
 package com.myapp.web;
 
-import com.myapp.data.model.Address;
-import com.myapp.data.model.User;
-import com.myapp.service.event.BlackListEvent1;
-import com.myapp.service.event.EventService;
-import com.myapp.service.propertyEditor.DependsOnExoticType;
-import config.AppConfig;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
+import com.myapp.data.model.spel.Inventor;
+import com.myapp.data.model.spel.Society;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.common.TemplateParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Set;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class Application {
 
@@ -137,18 +124,55 @@ public class Application {
 //        System.out.println(message);
 
         // Create and set a calendar
-        GregorianCalendar c = new GregorianCalendar();
-        c.set(1856, 7, 9);
+//        GregorianCalendar c = new GregorianCalendar();
+//        c.set(1856, 7, 9);
+//
 
-// The constructor arguments are name, birthday, and nationality.
-        User user = new User("张三");
-
-        ExpressionParser parser = new SpelExpressionParser();
-        Expression exp = parser.parseExpression("name == '张三'");
+//        User user = new User("Tom");
+//        ExpressionParser parser = new SpelExpressionParser();
+//        Expression expression = parser.parseExpression("name?:'Unknown'");
+//        expression = parser.parseExpression("name?.toUpperCase()");
 
 //        EvaluationContext context = new StandardEvaluationContext(user);
-//        String name = (String) exp.getValue(user);
-        System.out.println(exp.getValue(user));
+//        String value = expression.getValue(context, String.class);
+
+//        String value = expression.getValue(user, String.class);
+//
+//        System.out.println(value);
+
+        Society society = new Society();
+        EvaluationContext societyContext = new StandardEvaluationContext(society);
+        societyContext.setVariable("testVariable", "Nikola Tesla");
+        ExpressionParser parser = new SpelExpressionParser();
+
+        Expression expression = parser.parseExpression("ints.?[#this > 1]");
+        Integer[] ints = (Integer[]) expression.getValue(societyContext);
+        System.out.println(Arrays.toString(ints));
+
+        expression = parser.parseExpression("Members.?[Nationality == '中国']");
+        List inventors = (List) expression.getValue(societyContext);
+//        expression = parser.parseExpression("Members.^[Nationality == '中国']");
+//        expression = parser.parseExpression("Members.$[Nationality == '中国']");
+//        Inventor inventors = (Inventor) expression.getValue(societyContext);
+        System.out.println(inventors);
+
+        expression = parser.parseExpression("officers.?[value > 1]");
+//        expression = parser.parseExpression("officers.^[value > 1]");
+//        expression = parser.parseExpression("officers.$[value > 1]");
+        Map officers = expression.getValue(societyContext, Map.class);
+        System.out.println(officers);
+
+        expression = parser.parseExpression("members.![nationality]");
+//        expression = parser.parseExpression("officers.![key]");
+        List nationalities = expression.getValue(societyContext, List.class);
+        System.out.println(nationalities);
+
+        String str = parser.parseExpression("'My name is ' + #testVariable").getValue(societyContext, String.class);
+        str = parser.parseExpression("random number is #{T(java.lang.Math).random()}", new TemplateParserContext()).getValue(String.class);
+
+        System.out.println(str);
+
+
 
     }
 }

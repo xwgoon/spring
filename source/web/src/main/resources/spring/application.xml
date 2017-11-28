@@ -7,7 +7,7 @@
 
     <import resource="service.xml"/>
 
-    <!--<context:annotation-config/>-->
+    <context:annotation-config/>
 
     <!--<context:component-scan base-package="com.myapp"/>-->
 
