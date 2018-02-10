@@ -10,4 +10,6 @@ repositories {
 
 dependencies {
     compile project(':service')
+    compile group: 'org.apache.tomcat.embed', name: 'tomcat-embed-jasper', version: '9.0.4'
+
 }

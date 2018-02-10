@@ -1,21 +1,13 @@
 package com.myapp.web;
 
-import com.myapp.data.model.spel.Inventor;
-import com.myapp.data.model.spel.Society;
-import org.springframework.expression.EvaluationContext;
-import org.springframework.expression.Expression;
-import org.springframework.expression.ExpressionParser;
-import org.springframework.expression.common.TemplateParserContext;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import org.apache.catalina.Context;
+import org.apache.catalina.LifecycleException;
+import org.apache.catalina.core.StandardHost;
+import org.apache.catalina.startup.Tomcat;
 
 public class Application {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 
 //        ApplicationContext context = new ClassPathXmlApplicationContext("spring/application.xml");
 //        ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
@@ -139,40 +131,51 @@ public class Application {
 //        String value = expression.getValue(user, String.class);
 //
 //        System.out.println(value);
+//
+//        Society society = new Society();
+//        EvaluationContext societyContext = new StandardEvaluationContext(society);
+//        societyContext.setVariable("testVariable", "Nikola Tesla");
+//        ExpressionParser parser = new SpelExpressionParser();
+//
+//        Expression expression = parser.parseExpression("ints.?[#this > 1]");
+//        Integer[] ints = (Integer[]) expression.getValue(societyContext);
+//        System.out.println(Arrays.toString(ints));
+//
+//        expression = parser.parseExpression("Members.?[Nationality == '中国']");
+//        List inventors = (List) expression.getValue(societyContext);
+////        expression = parser.parseExpression("Members.^[Nationality == '中国']");
+////        expression = parser.parseExpression("Members.$[Nationality == '中国']");
+////        Inventor inventors = (Inventor) expression.getValue(societyContext);
+//        System.out.println(inventors);
+//
+//        expression = parser.parseExpression("officers.?[value > 1]");
+////        expression = parser.parseExpression("officers.^[value > 1]");
+////        expression = parser.parseExpression("officers.$[value > 1]");
+//        Map officers = expression.getValue(societyContext, Map.class);
+//        System.out.println(officers);
+//
+//        expression = parser.parseExpression("members.![nationality]");
+////        expression = parser.parseExpression("officers.![key]");
+//        List nationalities = expression.getValue(societyContext, List.class);
+//        System.out.println(nationalities);
+//
+//        String str = parser.parseExpression("'My name is ' + #testVariable").getValue(societyContext, String.class);
+//        str = parser.parseExpression("random number is #{T(java.lang.Math).random()}", new TemplateParserContext()).getValue(String.class);
+//
+//        System.out.println(str);
+//
+//        FooService foo = (FooService) context.getBean("fooService");
+//        foo.getFoo("Pengo", 12);
 
-        Society society = new Society();
-        EvaluationContext societyContext = new StandardEvaluationContext(society);
-        societyContext.setVariable("testVariable", "Nikola Tesla");
-        ExpressionParser parser = new SpelExpressionParser();
 
-        Expression expression = parser.parseExpression("ints.?[#this > 1]");
-        Integer[] ints = (Integer[]) expression.getValue(societyContext);
-        System.out.println(Arrays.toString(ints));
+//        sortList();
+//        System.out.println();
+//        sortArray();
 
-        expression = parser.parseExpression("Members.?[Nationality == '中国']");
-        List inventors = (List) expression.getValue(societyContext);
-//        expression = parser.parseExpression("Members.^[Nationality == '中国']");
-//        expression = parser.parseExpression("Members.$[Nationality == '中国']");
-//        Inventor inventors = (Inventor) expression.getValue(societyContext);
-        System.out.println(inventors);
-
-        expression = parser.parseExpression("officers.?[value > 1]");
-//        expression = parser.parseExpression("officers.^[value > 1]");
-//        expression = parser.parseExpression("officers.$[value > 1]");
-        Map officers = expression.getValue(societyContext, Map.class);
-        System.out.println(officers);
-
-        expression = parser.parseExpression("members.![nationality]");
-//        expression = parser.parseExpression("officers.![key]");
-        List nationalities = expression.getValue(societyContext, List.class);
-        System.out.println(nationalities);
-
-        String str = parser.parseExpression("'My name is ' + #testVariable").getValue(societyContext, String.class);
-        str = parser.parseExpression("random number is #{T(java.lang.Math).random()}", new TemplateParserContext()).getValue(String.class);
-
-        System.out.println(str);
-
-
-
+//        System.out.println(System.getProperty("user.dir"));
+//        System.out.println(new File("web/src/main/").getAbsolutePath());
+//        System.out.println(new File(".").getAbsolutePath());
     }
+
+
 }

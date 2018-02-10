@@ -1,5 +1,6 @@
-package config;
+package com.myapp.service.config;
 
+import com.myapp.data.config.DataConfig;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 

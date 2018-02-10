@@ -12,7 +12,7 @@
 
     <!--<bean class="config.DataConfig"/>-->
 
-    <!--<context:component-scan base-package="com.myapp,config"/>-->
+    <context:component-scan base-package="com.myapp.data"/>
 
     <!--<bean id="user0" class="com.myapp.data.model.User">-->
         <!--<property name="resource" value="spring/prop.properties"/>-->
@@ -24,15 +24,15 @@
 
     <!--<bean id="addressDao2" class="com.myapp.data.dao.AddressDao"/>-->
 
-    <bean id="address0" name="address0" class="com.myapp.data.model.Address">
+    <!--<bean id="address0" name="address0" class="com.myapp.data.model.Address">-->
         <!--<property name="randomNumber" value="#{T(java.lang.Math).random() * 100.0}"/>-->
         <!--<property name="defaultLocale" value="#{systemProperties['user.timezone']}"/>-->
-    </bean>
+    <!--</bean>-->
 
-    <bean id="address1" name="address1" class="com.myapp.data.model.Address">
-        <property name="randomNumber" value="#{T(java.lang.Math).random() * 100.0}"/>
-        <property name="defaultLocale" value="#{address0.defaultLocale}"/>
-    </bean>
+    <!--<bean id="address1" name="address1" class="com.myapp.data.model.Address">-->
+        <!--<property name="randomNumber" value="#{T(java.lang.Math).random() * 100.0}"/>-->
+        <!--<property name="defaultLocale" value="#{address0.defaultLocale}"/>-->
+    <!--</bean>-->
 
     <!--静态内部类-->
     <!--<bean id="identityCard" class="com.myapp.data.model.User.IdentityCard">-->

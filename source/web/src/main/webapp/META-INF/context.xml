@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--context.xml用于重写StandardContext里面的field值（通过反射调用相应的set方法）-->
+
+<!--<Context allowCasualMultipartParsing="true" webappVersion="1.2.3"/>-->
+<Context/>

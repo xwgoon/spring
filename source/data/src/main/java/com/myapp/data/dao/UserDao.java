@@ -3,7 +3,7 @@ package com.myapp.data.dao;
 import com.myapp.data.model.User;
 import org.springframework.stereotype.Repository;
 
-//@Repository
+@Repository
 public class UserDao {
 
     private static UserDao userDao = new UserDao();

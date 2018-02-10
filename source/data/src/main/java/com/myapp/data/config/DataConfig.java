@@ -1,13 +1,6 @@
-package config;
+package com.myapp.data.config;
 
-import com.myapp.data.model.Address;
-import com.myapp.data.model.User;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
-import org.springframework.core.env.Environment;
 
 @Configuration
 public class DataConfig {

@@ -1,8 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns="http://java.sun.com/xml/ns/javaee"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
 		  http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
-           version="3.0">
+         version="3.0">
+
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+    <!--<listener>-->
+        <!--<listener-class>com.myapp.web.config.MyListener</listener-class>-->
+    <!--</listener>-->
+
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath:META-INF/spring/applicationContext.xml</param-value>
+    </context-param>
+
+    <servlet>
+        <servlet-name>xmlServlet</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:META-INF/spring/spring-mvc.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+
+        <!--配置了StandardServletMultipartResolver后，必须配置multipart-config
+        或设置StandardContext.allowCasualMultipartParsing="true"，否则会报错-->
+        <multipart-config>
+            <location/>
+            <max-file-size>257880</max-file-size><!--单位是字节，是指每个field的最大值-->
+            <max-request-size>257880</max-request-size>
+            <file-size-threshold>0</file-size-threshold>
+        </multipart-config>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>xmlServlet</servlet-name>
+        <url-pattern>/xmlServletPath/*</url-pattern>  <!--只能有一个*号，两个*号（/app1/**）会访问不了-->
+    </servlet-mapping>
+    <!--可同时创建多个servlet-->
+
+    <filter>
+        <filter-name>characterEncodingFilter</filter-name>
+        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+        <init-param>
+            <param-name>forceEncoding</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>characterEncodingFilter</filter-name>
+        <url-pattern>/xmlServletPath/*</url-pattern>
+    </filter-mapping>
+
+    <!--<filter>-->
+        <!--<filter-name>myFilter</filter-name>-->
+        <!--<filter-class>com.myapp.web.config.MyFilter</filter-class>-->
+    <!--</filter>-->
+    <!--<filter-mapping>-->
+        <!--<filter-name>myFilter</filter-name>-->
+        <!--<url-pattern>/xmlServletPath/*</url-pattern>&lt;!&ndash;filter是在请求交给servlet之前执行，因此根路径是/contextPath/&ndash;&gt;-->
+    <!--</filter-mapping>-->
+
+    <!--<error-page>-->
+        <!--&lt;!&ndash;<error-code>400</error-code>&ndash;&gt;-->
+        <!--<location>/WEB-INF/views/test1.html</location>-->
+    <!--</error-page>-->
 
 </web-app>

@@ -1,4 +1,4 @@
-package com.myapp.web;
+package com.myapp.web.config;
 
 import com.myapp.data.model.User;
 import org.springframework.beans.factory.FactoryBean;

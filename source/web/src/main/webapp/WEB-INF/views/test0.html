@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>test0</title>
+</head>
+<body>
+<form method="post" action="http://localhost:8080/contextPath/xmlServletPath/controller0/post"
+      enctype="multipart/form-data">
+    <input type="text" name="name" value="张三,李四,Tom"/><br/>
+    <input type="text" name="date" value="2018-02-07"/><br/>
+    <input type="file" name="file"/><br/>
+    <button>post</button>
+</form>
+<br/><br/>
+
+<form method="get" action="controller0/get0">
+    <input type="text" name="name"/><br/>
+    <button>get</button>
+</form>
+</body>
+</html>
+
+<!--<script type="text/javascript" src="resources/js/jquery-3.3.1.min.js"></script>-->
+<script type="text/javascript">
+
+    // $.get("http://localhost:8888/contextPath/xmlServletPath/controller0/get0", function (resp) {
+    //     console.log(resp);
+    // });
+
+</script>
