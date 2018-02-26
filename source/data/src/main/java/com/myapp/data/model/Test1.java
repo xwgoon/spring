@@ -11,7 +11,7 @@ public class Test1
 //        BeanNameAware
 {
 
-    @Autowired
+//    @Autowired
     private ApplicationContext applicationContext;
 
 //    public Test1() {

@@ -5,6 +5,8 @@ public class Foo {
     private String name;
     private int age;
 
+    public Foo(){}
+
     public Foo(String name, int age) {
         this.name = name;
         this.age = age;
@@ -24,5 +26,13 @@ public class Foo {
 
     public void setAge(int age) {
         this.age = age;
+    }
+
+    @Override
+    public String toString() {
+        return "Foo{" +
+                "name='" + name + '\'' +
+                ", age=" + age +
+                '}';
     }
 }

@@ -1,50 +1,123 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xmlns:p="http://www.springframework.org/schema/p" xmlns:oxm="http://www.springframework.org/schema/oxm"
+       xmlns:task="http://www.springframework.org/schema/task"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-                http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+                http://www.springframework.org/schema/beans/spring-beans.xsd
+                http://www.springframework.org/schema/aop
+                http://www.springframework.org/schema/aop/spring-aop.xsd
+                http://www.springframework.org/schema/context
+                http://www.springframework.org/schema/context/spring-context.xsd
+                http://www.springframework.org/schema/tx
+                http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
     <import resource="data.xml"/>
 
     <context:component-scan base-package="com.myapp.service"/>
 
+    <!--开启使用@Transactional-->
+    <!--<tx:annotation-driven transaction-manager="txManager"/>-->
+
+    <!--<task:annotation-driven executor="taskExecutor0" scheduler="taskScheduler0"/>-->
+
+    <!--<bean id="taskExecutor0" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">-->
+        <!--<property name="corePoolSize" value="5"/>-->
+        <!--<property name="maxPoolSize" value="10"/>-->
+        <!--<property name="queueCapacity" value="25"/>-->
+    <!--</bean>-->
+
+    <!--<bean id="taskScheduler0" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">-->
+        <!--<property name="poolSize" value="5"/>-->
+    <!--</bean>-->
+
+    <!--<task:executor id="taskExecutor1" pool-size="5-10" queue-capacity="25"/>-->
+    <!--<task:scheduler id="taskScheduler1" pool-size="5"/>-->
+
+    <!--<task:scheduled-tasks scheduler="taskScheduler1">-->
+        <!--<task:scheduled ref="simpleTask" method="doSomething" fixed-delay="1000"/>-->
+    <!--</task:scheduled-tasks>-->
+
+    <!--<bean id="myTaskExecutor" class="com.myapp.service.task.MyTaskExecutor">-->
+        <!--<constructor-arg ref="taskExecutor"/>-->
+    <!--</bean>-->
+
+    <!--<bean id="myMarshaller" class="com.myapp.service.oxm.MyMarshaller">-->
+        <!--<property name="marshaller" ref="castorMarshaller"/>-->
+        <!--<property name="unmarshaller" ref="castorMarshaller"/>-->
+    <!--</bean>-->
+
+    <!--<bean id="castorMarshaller" class="org.springframework.oxm.castor.CastorMarshaller" p:useXSITypeAtRoot="true"/>-->
+    <!--<oxm:castor-marshaller id="castorMarshaller" target-class="com.myapp.service.oxm.MySettings"/>-->
+
     <!-- this is the object that will be proxied by Spring's AOP infrastructure -->
-    <!--<bean id="fooService" class="com.myapp.service.aop.DefaultFooService"/>-->
+    <!--<bean id="fooService" class="com.myapp.service.aop.DefaultFooService">-->
+        <!--<property name="dataSource" ref="dataSource"/>-->
+    <!--</bean>-->
+
+    <!-- the transactional advice (what 'happens'; see the <aop:advisor/> bean below) -->
+    <!--<tx:advice id="txAdvice" transaction-manager="txManager">-->
+        <!--&lt;!&ndash; the transactional semantics... &ndash;&gt;-->
+        <!--<tx:attributes>-->
+            <!--&lt;!&ndash; all methods starting with 'get' are read-only &ndash;&gt;-->
+            <!--<tx:method name="get*" read-only="true"/>-->
+            <!--&lt;!&ndash; other methods use the default transaction settings (see below) &ndash;&gt;-->
+            <!--<tx:method name="*"/>-->
+        <!--</tx:attributes>-->
+    <!--</tx:advice>-->
+
+    <!-- ensure that the above transactional advice runs for any execution
+        of an operation defined by the FooService interface -->
+    <!--<aop:config>-->
+        <!--<aop:pointcut id="fooServiceOperation" expression="execution(* com.myapp.service.aop.FooService.*(..))"/>-->
+        <!--<aop:advisor advice-ref="txAdvice" pointcut-ref="fooServiceOperation"/>-->
+    <!--</aop:config>-->
+
+    <!-- similarly, don't forget the PlatformTransactionManager -->
+    <!--<bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">-->
+        <!--<property name="dataSource" ref="dataSource"/>-->
+    <!--</bean>-->
 
     <!-- this is the actual advice itself -->
-    <!--<bean id="profiler" class="com.myapp.service.aop.SimpleProfiler"/>-->
+    <!--<bean id="profiler" class="com.myapp.service.aop.SimpleProfiler">-->
+        <!--<property name="order" value="200"/>-->
+    <!--</bean>-->
 
     <!--<aop:config>-->
+        <!--<aop:pointcut id="fooServiceOperation" expression="execution(* com.myapp.service.aop.FooService.*(..))"/>-->
+        <!--<aop:advisor advice-ref="txAdvice" pointcut-ref="fooServiceOperation" order="1"/>-->
+
         <!--<aop:aspect ref="profiler">-->
             <!--<aop:pointcut id="theExecutionOfSomeFooServiceMethod"-->
-                          <!--expression="execution(* com.myapp.service.aop.FooService.getFoo(String,int)) and args(name, age)"/>-->
+                          <!--expression="execution(* com.myapp.service.aop.FooService.insertFoo(String)) and args(name)"/>-->
 
             <!--<aop:around pointcut-ref="theExecutionOfSomeFooServiceMethod" method="profile"/>-->
         <!--</aop:aspect>-->
     <!--</aop:config>-->
 
-
     <!--<bean id="propertyEditorSample" class="com.myapp.service.propertyEditor.DependsOnExoticType">-->
-        <!--<property name="type" value="aNameForExoticType"/>-->
+    <!--<property name="type" value="aNameForExoticType"/>-->
     <!--</bean>-->
 
     <!--<bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">-->
-        <!--<property name="customEditors">-->
-            <!--<map>-->
-                <!--<entry key="com.myapp.service.propertyEditor.ExoticType" value="com.myapp.service.propertyEditor.ExoticTypeEditor"/>-->
-            <!--</map>-->
-        <!--</property>-->
+    <!--<property name="customEditors">-->
+    <!--<map>-->
+    <!--<entry key="com.myapp.service.propertyEditor.ExoticType" value="com.myapp.service.propertyEditor.ExoticTypeEditor"/>-->
+    <!--</map>-->
+    <!--</property>-->
     <!--</bean>-->
 
     <!--<bean id="eventService" class="com.myapp.service.event.EventService">-->
-        <!--<property name="blackList">-->
-            <!--<list>-->
-                <!--<value>a</value>-->
-                <!--<value>b</value>-->
-                <!--<value>c</value>-->
-            <!--</list>-->
-        <!--</property>-->
+    <!--<property name="blackList">-->
+    <!--<list>-->
+    <!--<value>a</value>-->
+    <!--<value>b</value>-->
+    <!--<value>c</value>-->
+    <!--</list>-->
+    <!--</property>-->
     <!--</bean>-->
 
     <!--<bean id="blackListNotifier1" class="com.myapp.service.event.BlackListNotifier1"/>-->
@@ -54,12 +127,12 @@
     <!--<alias name="userDao1" alias="myUserDao"/>-->
 
     <!--<bean id="userService" class="com.myapp.service.user.UserServiceImpl">-->
-        <!--<constructor-arg name="userDao" ref="userDao1"/>-->
+    <!--<constructor-arg name="userDao" ref="userDao1"/>-->
     <!--</bean>-->
 
     <!--<bean id="userService2" class="com.myapp.service.user.UserServiceImpl">-->
-        <!--<constructor-arg name="addressDao" ref="addressDao"/>-->
-        <!--<constructor-arg name="userDao" ref="userDao1"/>-->
+    <!--<constructor-arg name="addressDao" ref="addressDao"/>-->
+    <!--<constructor-arg name="userDao" ref="userDao1"/>-->
     <!--</bean>-->
 
     <!--<bean id="userService" class="com.myapp.service.user.UserServiceImpl">-->

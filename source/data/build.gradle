@@ -25,4 +25,14 @@ dependencies {
     //servlet-api
     compile group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.0'
 
+    compile group: 'commons-dbcp', name: 'commons-dbcp', version: '1.4'
+    compile group: 'org.springframework', name: 'spring-jdbc', version: '5.0.3.RELEASE'
+    compile group: 'mysql', name: 'mysql-connector-java', version: '6.0.6'
+
+    //spring oxm
+    compile group: 'org.springframework', name: 'spring-oxm', version: '5.0.3.RELEASE'
+    //use castor
+    compile group: 'org.codehaus.castor', name: 'castor-xml', version: '1.4.1'
+
+
 }

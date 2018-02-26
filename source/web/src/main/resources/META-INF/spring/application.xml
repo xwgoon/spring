@@ -7,19 +7,19 @@
                 http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
 
-    <mvc:annotation-driven />
+    <!--<mvc:annotation-driven />--><!--开启使用MVC。会生成相应的mvc基础bean-->
 
-    <mvc:view-resolvers>
-        <mvc:jsp prefix="/WEB-INF/views/" suffix=".html"/>
-    </mvc:view-resolvers>
+    <!--<mvc:view-resolvers>-->
+        <!--<mvc:jsp prefix="/WEB-INF/views/" suffix=".html"/>-->
+    <!--</mvc:view-resolvers>-->
 
-    <mvc:view-controller path="/test" view-name="test0"/>
+    <!--<mvc:view-controller path="/test" view-name="test0"/>-->
 
-    <!--<import resource="service.xml"/>-->
+    <import resource="service.xml"/>
 
-    <!--<context:annotation-config/>-->
+    <!--<context:annotation-config/>--><!--开启使用注解。若已使用component-scan，那么默认已开启，因此可省略此配置-->
 
-    <!--<context:component-scan base-package="com.myapp"/>-->
+    <context:component-scan base-package="com.myapp.web"/>
 
     <!--<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">-->
         <!--<property name="basenames">-->

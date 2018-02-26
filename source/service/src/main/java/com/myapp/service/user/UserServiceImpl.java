@@ -47,11 +47,11 @@ public class UserServiceImpl implements UserService {
         this.userDao11 = userDao;
     }
 
-    //    @Autowired
+//        @Autowired
 //    @Resource
-//    public void fun(UserDao userDao2) {
-//        this.userDao1 = userDao2;
-//    }
+    public void fun(UserDao userDao2) {
+        this.userDao11 = userDao2;
+    }
 
     @Override
     public User findOneById(Long id) {

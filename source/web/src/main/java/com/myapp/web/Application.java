@@ -1,21 +1,77 @@
 package com.myapp.web;
 
-import org.apache.catalina.Context;
-import org.apache.catalina.LifecycleException;
-import org.apache.catalina.core.StandardHost;
-import org.apache.catalina.startup.Tomcat;
+import com.myapp.service.task.RunnableTask;
+import com.myapp.service.task.SimpleTask;
+import com.myapp.web.config.TaskConfig;
+import com.myapp.web.config.WebConfig;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.concurrent.Future;
 
 public class Application {
 
     public static void main(String[] args) throws Exception {
 
-//        ApplicationContext context = new ClassPathXmlApplicationContext("spring/application.xml");
-//        ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+        ApplicationContext context = new ClassPathXmlApplicationContext("/META-INF/spring/application.xml");
+//        ApplicationContext context = new AnnotationConfigApplicationContext(WebConfig.class);
 
 //        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 //        context.getEnvironment().setActiveProfiles("user2");
 //        context.register(AppConfig.class);
 //        context.refresh();
+
+//        SimpleTask simpleTask = context.getBean("simpleTask", SimpleTask.class);
+//        simpleTask.doSomething();
+//        System.out.println(LocalDateTime.now());
+//        Future<String> future = simpleTask.returnSomething("hello");
+//        Thread.sleep(2000);
+//        System.out.println("main(): " + Thread.currentThread());
+//        System.out.println(future.get());
+//        System.out.println(LocalDateTime.now());
+
+
+//        ThreadPoolTaskScheduler taskScheduler = context.getBean("taskScheduler", ThreadPoolTaskScheduler.class);
+//        System.out.println(new Date());
+
+//        taskScheduler.schedule(
+//                new RunnableTask("specific time, 3 seconds from now"),
+//                new Date(System.currentTimeMillis() + 3000));
+//
+//        taskScheduler.scheduleWithFixedDelay(
+//                new RunnableTask("Fixed 1 second Delay"),
+//                1000);
+//        taskScheduler.scheduleWithFixedDelay(
+//                new RunnableTask("3 seconds from now Fixed 1 second Delay"),
+//                new Date(System.currentTimeMillis() + 3000),
+//                1000);
+
+//        taskScheduler.scheduleAtFixedRate(
+//                new RunnableTask("Fixed Rate of 1 seconds"),
+//                1000);
+//        taskScheduler.scheduleAtFixedRate(
+//                new RunnableTask("3 seconds from now Fixed Rate of 1 seconds"),
+//                new Date(System.currentTimeMillis() + 3000),
+//                1000);
+
+//        taskScheduler.shutdown();
+
+
+//        MyTaskExecutor myTaskExecutor = context.getBean("myTaskExecutor", MyTaskExecutor.class);
+//        myTaskExecutor.printMessages();
+//        myTaskExecutor.shutdown();
+
+//        MyMarshaller myMarshaller = context.getBean("myMarshaller", MyMarshaller.class);
+//        myMarshaller.saveSettings();
+//        myMarshaller.loadSettings();
+
+//        FooService fooService = context.getBean("fooService", FooService.class);
+//        System.out.println(fooService.getById(2L));
+//        fooService.insertFoo(LocalDateTime.now().toString());
 
 //        Address address = context.getBean("address", Address.class);
 //        address.setAddress("123");

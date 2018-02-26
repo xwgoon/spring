@@ -3,16 +3,28 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:c="http://www.springframework.org/schema/c"
        xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-                http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+                http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
 
     <!--<context:annotation-config/>-->
+
+    <context:component-scan base-package="com.myapp.data"/>
+
+    <!--<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">-->
+        <!--<property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>-->
+        <!--<property name="url" value="jdbc:mysql://localhost/test?useSSL=false&amp;nullNamePatternMatchesAll=true"/>-->
+        <!--<property name="username" value="root"/>-->
+        <!--<property name="password" value="root"/>-->
+    <!--</bean>-->
+
+    <!--<jdbc:initialize-database>-->
+        <!--<jdbc:script location="classpath:/META-INF/test-data.sql"/>-->
+    <!--</jdbc:initialize-database>-->
 
     <!--<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>-->
 
     <!--<bean class="config.DataConfig"/>-->
-
-    <context:component-scan base-package="com.myapp.data"/>
 
     <!--<bean id="user0" class="com.myapp.data.model.User">-->
         <!--<property name="resource" value="spring/prop.properties"/>-->

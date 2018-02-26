@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<my-settings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:java="http://java.sun.com" foo-enabled="false" xsi:type="java:com.myapp.service.oxm.MySettings"/>

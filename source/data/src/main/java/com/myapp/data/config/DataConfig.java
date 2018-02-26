@@ -1,8 +1,10 @@
 package com.myapp.data.config;
 
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
+//@Configuration
+//@ComponentScan("com.myapp.data")
 public class DataConfig {
 
 //    @Autowired
