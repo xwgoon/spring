@@ -1,11 +1,14 @@
 package com.myapp.data.model;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotBlank;
 
+@Component
 public class Address {
 
+    @Value("${myapp.user.id}")
     private Long id;
 
 //    @NotBlank(message = "address不能为空！")

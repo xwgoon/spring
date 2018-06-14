@@ -23,7 +23,7 @@ public class MyWebAppInitializer implements WebApplicationInitializer {
 //        servletContext.addListener(new ContextLoaderListener(rootCtx));
 
 //        XmlWebApplicationContext servletCtx = new XmlWebApplicationContext();
-//        servletCtx.setConfigLocation("classpath:META-INF/spring/application.xml");
+//        servletCtx.setConfigLocation("classpath:META-INF/spring/applicationContext.xml");
 //        ServletRegistration.Dynamic appServlet = servletContext.addServlet("javaServlet", new DispatcherServlet(servletCtx));
 //        appServlet.setLoadOnStartup(2);
 //        appServlet.addMapping("/javaServletPath/*");

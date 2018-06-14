@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Import;
 
 //@Configuration
 //@Import(ServiceConfig.class)
-//@ImportResource("classpath:spring/application.xml")
+//@ImportResource("classpath:spring/applicationContext.xml")
 //@PropertySource("classpath:spring/prop.properties")
 //@ComponentScan("com.myapp.web")
 public class WebConfig {

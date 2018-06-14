@@ -1,11 +1,14 @@
 package com.myapp.web.controller;
 
+import com.myapp.data.model.Address;
+import com.myapp.data.model.User;
 import com.myapp.service.user.UserService;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.format.datetime.DateFormatter;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
@@ -25,7 +28,10 @@ import java.util.List;
 public class Controller0 {
 
     @Autowired
-    private UserService userService;
+    private Address address;
+
+//    @Autowired
+//    private UserService userService;
 
 //    @InitBinder
 //    public void initBinder(WebDataBinder binder) {
@@ -48,8 +54,8 @@ public class Controller0 {
     @ResponseBody
 //    @ResponseStatus(value = HttpStatus.BAD_REQUEST,reason = "任性")
 //    @CrossOrigin("http://localhost:8888")
-    public String get0(HttpServletRequest httpServletRequest,
-                       HttpServletResponse httpServletResponse) {
+    public User get0(HttpServletRequest httpServletRequest,
+                     HttpServletResponse httpServletResponse) {
 
 //        RequestContext requestContext=new RequestContext(httpServletRequest,httpServletResponse);
 //        System.out.println(requestContext.getLocale());
@@ -60,13 +66,15 @@ public class Controller0 {
 
         String name = httpServletRequest.getParameter("name");
 //        throw new IllegalStateException();
-        return "get0";
+
+        System.out.println(address.getId());
+        return new User("张三");
     }
 
     @GetMapping("get1")
     @ResponseBody
-    public String get1() {
-        return "get1";
+    public ResponseEntity get1() {
+        return ResponseEntity.ok(new User("张三"));
     }
 
     @PostMapping(value = "post")

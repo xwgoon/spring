@@ -5,8 +5,28 @@
 
     <import resource="service.xml"/>
 
-    <bean id="multipartResolver" class="org.springframework.web.multipart.support.StandardServletMultipartResolver">
-        <property name="resolveLazily" value="true"/>
-    </bean>
+    <!--<context:annotation-config/>--><!--开启使用注解。若已使用component-scan，那么默认已开启，因此可省略此配置-->
+
+    <!--<context:component-scan base-package="com.myapp.web"/>-->
+
+    <!--<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">-->
+    <!--<property name="basenames">-->
+    <!--<list>-->
+    <!--<value>i18n.format</value>-->
+    <!--<value>i18n.exceptions</value>-->
+    <!--</list>-->
+    <!--</property>-->
+    <!--&lt;!&ndash;<property name="basename" value="i18n.exceptions"/>&ndash;&gt;-->
+    <!--</bean>-->
+
+    <!--<bean class="com.myapp.web.InstantiationTracingBeanPostProcessor"/>-->
+
+    <!--<bean class="com.myapp.web.MyBeanFactoryPostProcessor" autowire="constructor"/>-->
+
+    <!--<bean id="myFactoryBean" class="com.myapp.web.MyFactoryBean"/>-->
+
+    <!--<bean id="multipartResolver" class="org.springframework.web.multipart.support.StandardServletMultipartResolver">-->
+        <!--<property name="resolveLazily" value="true"/>-->
+    <!--</bean>-->
 
 </beans>

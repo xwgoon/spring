@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.concurrent.Future;
 
-@Component
+//@Component
 public class SimpleTask {
 
     @Async

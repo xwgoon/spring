@@ -1,5 +1,6 @@
 package com.myapp.web;
 
+import com.myapp.data.model.Address;
 import com.myapp.service.task.RunnableTask;
 import com.myapp.service.task.SimpleTask;
 import com.myapp.web.config.TaskConfig;
@@ -17,7 +18,7 @@ public class Application {
 
     public static void main(String[] args) throws Exception {
 
-        ApplicationContext context = new ClassPathXmlApplicationContext("/META-INF/spring/application.xml");
+        ApplicationContext context = new ClassPathXmlApplicationContext("/META-INF/spring/applicationContext.xml");
 //        ApplicationContext context = new AnnotationConfigApplicationContext(WebConfig.class);
 
 //        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
@@ -143,8 +144,8 @@ public class Application {
 //        System.out.println(user);
 
 //
-//        Address address = context.getBean("address", Address.class);
-//        System.out.println(address);
+        Address address = context.getBean("address0", Address.class);
+        System.out.println(address.getId());
 //
 //        address.setAddress("人民公园");
 //        System.out.println(address);

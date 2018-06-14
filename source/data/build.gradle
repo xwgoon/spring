@@ -34,5 +34,7 @@ dependencies {
     //use castor
     compile group: 'org.codehaus.castor', name: 'castor-xml', version: '1.4.1'
 
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.5'
+
 
 }

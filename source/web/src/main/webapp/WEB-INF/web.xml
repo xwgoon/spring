@@ -29,12 +29,12 @@
 
         <!--配置了StandardServletMultipartResolver后，必须配置multipart-config
         或设置StandardContext.allowCasualMultipartParsing="true"，否则会报错-->
-        <multipart-config>
-            <location/>
-            <max-file-size>257880</max-file-size><!--单位是字节，是指每个field的最大值-->
-            <max-request-size>257880</max-request-size>
-            <file-size-threshold>0</file-size-threshold>
-        </multipart-config>
+        <!--<multipart-config>-->
+            <!--<location/>-->
+            <!--<max-file-size>257880</max-file-size>&lt;!&ndash;单位是字节，是指每个field的最大值&ndash;&gt;-->
+            <!--<max-request-size>257880</max-request-size>-->
+            <!--<file-size-threshold>0</file-size-threshold>-->
+        <!--</multipart-config>-->
     </servlet>
 
     <servlet-mapping>
