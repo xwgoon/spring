@@ -3,7 +3,8 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+       xmlns:websocket="http://www.springframework.org/schema/websocket"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/websocket http://www.springframework.org/schema/websocket/spring-websocket.xsd">
 
     <mvc:annotation-driven/><!--开启使用MVC。会生成相应的mvc基础bean-->
 
@@ -14,7 +15,7 @@
     </mvc:view-resolvers>
 
     <!--<mvc:redirect-view-controller path="/test-redirect" redirect-url="test0"/>-->
-    <mvc:view-controller path="/test" view-name="test0"/>
+    <mvc:view-controller path="/test" view-name="test1"/>
 
     <mvc:resources mapping="/resources/**" location="/resources/" cache-period="3600"/>
 
@@ -29,5 +30,12 @@
             <!--<bean class="com.myapp.web.config.MyInterceptor"/>-->
         <!--</mvc:interceptor>-->
     <!--</mvc:interceptors>-->
+
+    <websocket:handlers>
+        <websocket:mapping path="/ws" handler="myWebSocketHandler"/>
+        <websocket:sockjs/>
+    </websocket:handlers>
+
+    <bean id="myWebSocketHandler" class="com.myapp.web.websocket.MyWebSocketHandler"/>
 
 </beans>

@@ -225,7 +225,7 @@
         <!--&lt;!&ndash;<property name="address.address" value="春熙路"/>&ndash;&gt;-->
     <!--</bean>-->
 
-    <context:property-placeholder location="classpath:prop.properties" system-properties-mode="NEVER"/>
+    <!--<context:property-placeholder location="classpath:prop.properties" system-properties-mode="NEVER"/>-->
 
     <!--<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" p:systemPropertiesMode="0">-->
         <!--<property name="locations" value="classpath:spring/prop.properties"/>-->

@@ -8,7 +8,7 @@ import javax.validation.constraints.NotBlank;
 @Component
 public class Address {
 
-    @Value("${myapp.user.id}")
+//    @Value("${myapp.user.id}")
     private Long id;
 
 //    @NotBlank(message = "address不能为空！")
@@ -16,7 +16,7 @@ public class Address {
 
     private double randomNumber;
 
-    @Value("#{systemProperties['user.timezone']}")
+//    @Value("#{systemProperties['user.timezone']}")
     private String defaultLocale;
 
     public Address() {

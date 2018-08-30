@@ -1,10 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <title>test1</title>
 </head>
 <body>
-test1
+to:<input id="to"/></br>
+message:<input id="msg"/></br>
+<button id="send" onclick="sendMessage()">send</button>
+<button id="close" onclick="closeSocket()">close</button>
 </body>
 </html>
+
+<script type="text/javascript" src="resources/js/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="resources/js/sockjs.min.js"></script>
+<script type="text/javascript">
+
+    //刷新或关闭页面当前连接都会关闭
+    var sock = new SockJS('http://localhost:8888/contextPath/xmlServletPath/ws?phone=13586978602');
+    sock.onopen = function () {
+        console.log('连接成功');
+        // sock.send('我是客户端');
+    };
+
+    sock.onmessage = function (e) {
+        console.log('服务器端发送消息：', e.data);
+    };
+
+    sock.onclose = function () {
+        console.log('连接关闭');
+    };
+
+    function sendMessage() {
+        var data = {
+            "to": $('#to').val(),
+            "msg": $('#msg').val()
+        };
+        console.log('客户端发送消息：' + data);
+        sock.send(JSON.stringify(data));
+    }
+
+    function closeSocket() {
+        console.log('客户端关闭连接');
+        sock.close();
+    }
+
+
+</script>
