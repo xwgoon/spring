@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="zh-CN" xmlns="http://www.w3.org/1999/html">
 <head>
-    <meta charset="UTF-8">
-    <title>test1</title>
+    <meta charset=utf-8">
+    <title>websocket</title>
 </head>
 <body>
-to:<input id="to"/></br>
-message:<input id="msg"/></br>
-<button id="send" onclick="sendMessage()">send</button>
-<button id="close" onclick="closeSocket()">close</button>
+接收者：<input id="to"/></br>
+信息：<input id="msg"/></br>
+<button id="send" onclick="sendMessage()">发送</button>
+<button id="close" onclick="closeSocket()">下线</button>
 </body>
 </html>
 
@@ -17,7 +17,7 @@ message:<input id="msg"/></br>
 <script type="text/javascript">
 
     //刷新或关闭页面当前连接都会关闭
-    var sock = new SockJS('http://localhost:8888/contextPath/xmlServletPath/ws?phone=13586978602');
+    var sock = new SockJS('http://localhost:8888/contextPath/xmlServletPath/ws?id=123');
     sock.onopen = function () {
         console.log('连接成功');
         // sock.send('我是客户端');

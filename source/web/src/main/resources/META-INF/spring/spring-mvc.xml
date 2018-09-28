@@ -14,8 +14,9 @@
         <mvc:jsp prefix="/WEB-INF/views/" suffix=".html"/>
     </mvc:view-resolvers>
 
-    <!--<mvc:redirect-view-controller path="/test-redirect" redirect-url="test0"/>-->
-    <mvc:view-controller path="/test" view-name="test1"/>
+    <!--<mvc:redirect-view-controller path="/test-redirect" redirect-url="test"/>-->
+    <mvc:view-controller path="/test" view-name="test"/>
+    <mvc:view-controller path="/websocket" view-name="websocket"/>
 
     <mvc:resources mapping="/resources/**" location="/resources/" cache-period="3600"/>
 
@@ -33,6 +34,9 @@
 
     <websocket:handlers>
         <websocket:mapping path="/ws" handler="myWebSocketHandler"/>
+        <websocket:handshake-interceptors>
+            <bean class="com.myapp.web.websocket.MyHandshakeInterceptor"/>
+        </websocket:handshake-interceptors>
         <websocket:sockjs/>
     </websocket:handlers>
 

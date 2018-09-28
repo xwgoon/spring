@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>test</title>
+</head>
+<body>
+<form id="myForm">
+    <input type="text" name="name" value="Tom"/><br/>
+    <input type="text" name="dataTime" value="2018-02-07"/><br/>
+    <input type="file" name="file"/><br/>
+    <button type="button" onclick="upload()">post</button>
+</form>
+<br/><br/>
+
+<form method="get" action="controller0/get0">
+    <input type="text" name="name"/><br/>
+    <button>get</button>
+</form>
+</body>
+</html>
+
+<script type="text/javascript" src="resources/js/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+
+    // $.post("http://localhost:8080/api/project_list", function (resp) {
+    //     console.log(resp);
+    // });
+
+    function upload() {
+        var formData = new FormData(document.getElementById('myForm'));
+
+        $.ajax({
+            url: 'localhost:8080/api/pgc_import_excel',
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (resp) {
+            }
+        });
+    }
+
+
+</script>
