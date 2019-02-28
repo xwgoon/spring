@@ -17,7 +17,7 @@
 <script type="text/javascript">
 
     //刷新或关闭页面当前连接都会关闭
-    var sock = new SockJS('http://localhost:8888/contextPath/xmlServletPath/ws?id=123');
+    var sock = new SockJS('http://localhost:8888/contextPath/xmlServletPath/ws?userId=1');
     sock.onopen = function () {
         console.log('连接成功');
         // sock.send('我是客户端');
@@ -36,8 +36,9 @@
             "to": $('#to').val(),
             "msg": $('#msg').val()
         };
-        console.log('客户端发送消息：' + data);
-        sock.send(JSON.stringify(data));
+        var jsonData = JSON.stringify(data);
+        console.log('客户端发送消息：' + jsonData);
+        sock.send(jsonData);
     }
 
     function closeSocket() {
