@@ -68,7 +68,7 @@ public class Controller0 {
 //        throw new IllegalStateException();
 
         System.out.println(address.getId());
-        return new User("张三");
+        return new User("张三123");
     }
 
     @GetMapping("get1")
@@ -107,4 +107,21 @@ public class Controller0 {
 //    public String test1() {
 //        return "forward:test0";
 //    }
+
+    @RequestMapping("test1")
+    @ResponseBody
+    public void test1(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        request.getRequestDispatcher("test3").forward(request, response);
+    }
+
+    @RequestMapping("test2")
+    public void test2(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        response.sendRedirect("test3");
+    }
+
+    @RequestMapping("test3")
+    public void test3(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    }
+
+
 }
