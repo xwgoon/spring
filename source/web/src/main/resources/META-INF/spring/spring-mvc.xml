@@ -38,7 +38,8 @@
         <!--</mvc:interceptor>-->
     <!--</mvc:interceptors>-->
 
-    <websocket:handlers>
+    <!--若当前不支持websocket，使用的是jsonp方式，则须设置allowed-origins="*"-->
+    <websocket:handlers allowed-origins="*">
         <websocket:mapping path="/ws" handler="myWebSocketHandler"/>
         <websocket:handshake-interceptors>
             <bean class="com.myapp.web.websocket.MyHandshakeInterceptor"/>

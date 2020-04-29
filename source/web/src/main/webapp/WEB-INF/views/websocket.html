@@ -13,22 +13,36 @@
 </html>
 
 <script type="text/javascript" src="resources/js/jquery-3.3.1.min.js"></script>
-<script type="text/javascript" src="resources/js/sockjs.min.js"></script>
+<script type="text/javascript" src="resources/js/sockjs_1.0.0.min.js"></script>
 <script type="text/javascript">
 
-    //刷新或关闭页面当前连接都会关闭
-    var sock = new SockJS('http://localhost:8888/contextPath/xmlServletPath/ws?userId=1');
-    sock.onopen = function () {
-        console.log('连接成功');
-        // sock.send('我是客户端');
-    };
+    var sock = null;
+    var recInterval = null;
+    var userId = Math.floor((Math.random() * 100) + 1);
 
-    sock.onmessage = function (e) {
-        console.log('服务器端发送消息：', e.data);
-    };
+    var newConn = function () {
+        //刷新或关闭页面当前连接都会关闭
+        sock = new SockJS('http://localhost:8888/contextPath/xmlServletPath/ws?userId=' + userId);
 
-    sock.onclose = function () {
-        console.log('连接关闭');
+        sock.onopen = function () {
+            console.log('连接成功');
+            // sock.send('我是客户端');
+            clearInterval(recInterval);
+            recInterval = null;
+        };
+
+        sock.onmessage = function (e) {
+            console.log('服务器端发送消息：', e.data);
+        };
+
+        sock.onclose = function () {
+            console.log('连接关闭');
+            if(!recInterval){
+                recInterval = setInterval(function () {
+                    newConn();
+                }, 2000);
+            }
+        };
     };
 
     function sendMessage() {
@@ -46,5 +60,6 @@
         sock.close();
     }
 
+    newConn();
 
 </script>

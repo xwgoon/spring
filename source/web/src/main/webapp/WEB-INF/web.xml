@@ -26,6 +26,8 @@
             <param-value>classpath:META-INF/spring/spring-mvc.xml</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
+        <!--若当前不支持websocket，使用的是jsonp方式，则须设置<async-supported>true</async-supported>-->
+        <async-supported>true</async-supported>
 
         <!--配置了StandardServletMultipartResolver后，必须配置multipart-config
         或设置StandardContext.allowCasualMultipartParsing="true"，否则会报错-->
@@ -46,6 +48,8 @@
     <filter>
         <filter-name>characterEncodingFilter</filter-name>
         <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+        <!--若当前不支持websocket，使用的是jsonp方式，则须设置<async-supported>true</async-supported>-->
+        <async-supported>true</async-supported>
         <init-param>
             <param-name>encoding</param-name>
             <param-value>UTF-8</param-value>
