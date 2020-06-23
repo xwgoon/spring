@@ -79,21 +79,21 @@ public class Controller0 {
 
     @PostMapping(value = "post")
     @ResponseBody
-    public void post(HttpServletRequest httpServletRequest,
+    public String post(HttpServletRequest httpServletRequest,
                      HttpServletResponse httpServletResponse,
-                     MultipartHttpServletRequest multipartHttpServletRequest,
+//                     MultipartHttpServletRequest multipartHttpServletRequest,
                      @RequestParam(required = false) String name,
-                     @RequestParam(required = false) MultipartFile file,
-                     @RequestParam(value = "name") String[] nameArr,
-                     @RequestParam(value = "name") List<String> nameList,
-                     @RequestHeader("Accept") String accept,
-                     @RequestHeader("Accept") String[] acceptArr
+                     @RequestParam(required = false) MultipartFile file
+//                     @RequestParam(value = "name") String[] nameArr,
+//                     @RequestParam(value = "name") List<String> nameList,
+//                     @RequestHeader("Accept") String accept,
+//                     @RequestHeader("Accept") String[] acceptArr
 //                     @RequestParam Date date
     ) throws Exception {
 //        String name1 = multipartHttpServletRequest.getParameter("name");
 //        String name2 = httpServletRequest.getParameter("name");
 //        MultipartFile file1 = multipartHttpServletRequest.getFile("file");
-        throw new IllegalStateException();
+        return "hello张三";
     }
 
 //    @GetMapping({"test0", "test00"})

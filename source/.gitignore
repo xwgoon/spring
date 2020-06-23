@@ -1,3 +1,11 @@
 .gradle
-.idea
+gradle
 web/build
+/data/out/
+/service/out/
+/web/out/
+/data/src/main/resources/rebel.xml
+/service/src/main/resources/rebel.xml
+/web/src/main/resources/rebel.xml
+/rebel.xml
+/.idea/

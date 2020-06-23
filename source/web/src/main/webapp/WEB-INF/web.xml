@@ -45,6 +45,7 @@
     </servlet-mapping>
     <!--可同时创建多个servlet-->
 
+    <!--解决接收中文乱码-->
     <filter>
         <filter-name>characterEncodingFilter</filter-name>
         <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
