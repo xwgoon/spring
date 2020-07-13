@@ -19,6 +19,7 @@ public class User
 
     private Long id;
     private String name;
+    private Integer sex;
     private String mobile;
     private Address address;
     private List<String> list;
@@ -64,6 +65,11 @@ public class User
     public User(String name, Address address) {
         this.name = name;
         this.address = address;
+    }
+
+    public User(String name, Integer sex) {
+        this.name = name;
+        this.sex = sex;
     }
 
     public User(String name) {
@@ -124,6 +130,14 @@ public class User
 
     public void setResource(Resource resource) {
         this.resource = resource;
+    }
+
+    public Integer getSex() {
+        return sex;
+    }
+
+    public void setSex(Integer sex) {
+        this.sex = sex;
     }
 
     @Override

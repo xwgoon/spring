@@ -126,16 +126,16 @@
 
     <!--<alias name="userDao1" alias="myUserDao"/>-->
 
-    <!--<bean id="userService" class="com.myapp.service.user.UserServiceImpl">-->
+    <!--<bean id="userService" class="com.myapp.service.service.impl.UserServiceImpl">-->
     <!--<constructor-arg name="userDao" ref="userDao1"/>-->
     <!--</bean>-->
 
-    <!--<bean id="userService2" class="com.myapp.service.user.UserServiceImpl">-->
+    <!--<bean id="userService2" class="com.myapp.service.service.impl.UserServiceImpl">-->
     <!--<constructor-arg name="addressDao" ref="addressDao"/>-->
     <!--<constructor-arg name="userDao" ref="userDao1"/>-->
     <!--</bean>-->
 
-    <!--<bean id="userService" class="com.myapp.service.user.UserServiceImpl">-->
+    <!--<bean id="userService" class="com.myapp.service.service.impl.UserServiceImpl">-->
     <!--</bean>-->
 
 </beans>

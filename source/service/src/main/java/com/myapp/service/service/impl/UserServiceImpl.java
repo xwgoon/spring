@@ -1,18 +1,10 @@
-package com.myapp.service.user;
+package com.myapp.service.service.impl;
 
 import com.myapp.data.dao.AddressDao;
 import com.myapp.data.dao.UserDao;
-import com.myapp.data.model.Address;
 import com.myapp.data.model.User;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import com.myapp.service.service.UserService;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 @Service
 public class UserServiceImpl implements UserService {

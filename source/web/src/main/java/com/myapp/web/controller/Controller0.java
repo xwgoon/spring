@@ -2,26 +2,15 @@ package com.myapp.web.controller;
 
 import com.myapp.data.model.Address;
 import com.myapp.data.model.User;
-import com.myapp.service.user.UserService;
-import org.springframework.beans.TypeMismatchException;
+import com.myapp.service.util.excel.ExcelUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
-import org.springframework.format.datetime.DateFormatter;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
 
 @Controller
 @RequestMapping("controller0")
@@ -54,7 +43,7 @@ public class Controller0 {
     @ResponseBody
 //    @ResponseStatus(value = HttpStatus.BAD_REQUEST,reason = "任性")
 //    @CrossOrigin("http://localhost:8888")
-    public User get0(HttpServletRequest httpServletRequest,
+    public void get0(HttpServletRequest httpServletRequest,
                      HttpServletResponse httpServletResponse) {
 
 //        RequestContext requestContext=new RequestContext(httpServletRequest,httpServletResponse);
@@ -64,11 +53,13 @@ public class Controller0 {
 //        System.out.println(httpServletRequest.getContextPath());
 //        System.out.println(httpServletRequest.getServletPath());
 
-        String name = httpServletRequest.getParameter("name");
+//        String name = httpServletRequest.getParameter("name");
 //        throw new IllegalStateException();
 
-        System.out.println(address.getId());
-        return new User("张三123");
+//        System.out.println(address.getId());
+//        return new User("张三123");
+
+        ExcelUtil.exportExcel(null);
     }
 
     @GetMapping("get1")

@@ -1,4 +1,4 @@
-package com.myapp.service.user;
+package com.myapp.service.service;
 
 import com.myapp.data.model.User;
 
