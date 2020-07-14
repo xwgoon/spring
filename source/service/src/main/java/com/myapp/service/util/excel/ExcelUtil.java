@@ -166,6 +166,7 @@ public class ExcelUtil {
         for (int i = 0, sheetNum = workbook.getNumberOfSheets(); i < sheetNum; i++) {
             Sheet sheet = workbook.getSheetAt(i);
             Row titleRow = sheet.getRow(0);
+            if (titleRow == null) continue;
             for (int k = 0, titleRowCellNum = titleRow.getPhysicalNumberOfCells(); k <= titleRowCellNum; k++) {
                 sheet.autoSizeColumn(k, true);
                 int columnWidth = (int) (sheet.getColumnWidth(k) * 1.3);
