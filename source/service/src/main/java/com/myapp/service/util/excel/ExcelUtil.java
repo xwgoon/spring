@@ -4,6 +4,8 @@ import com.myapp.data.model.User;
 import com.myapp.service.util.file.FileUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.util.Internal;
+import org.apache.poi.util.Removal;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -17,6 +19,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static com.myapp.service.util.common.CommonUtil.checkNotEmpty;
 import static com.myapp.service.util.common.CommonUtil.fail;
@@ -24,6 +27,77 @@ import static com.myapp.service.util.file.FileUtil.PropConstant_CACHE_IMAGE_ROOT
 import static com.myapp.service.util.file.FileUtil.PropConstant_FILE_DOWNLOAD_URL;
 
 public class ExcelUtil {
+
+    private static final DataFormatter DATA_FORMATTER = new DataFormatter();
+
+    /**
+     * Dummy formula evaluator that does nothing.
+     * YK: The only reason of having this class is that
+     * {@link org.apache.poi.ss.usermodel.DataFormatter#formatCellValue(org.apache.poi.ss.usermodel.Cell)}
+     * returns formula string for formula cells. Dummy evaluator makes it to format the cached formula result.
+     * <p>
+     * See Bugzilla #50021
+     */
+    private static final FormulaEvaluator DUMMY_EVALUATOR = new FormulaEvaluator() {
+        @Override
+        public void clearAllCachedResultValues() {
+        }
+
+        @Override
+        public void notifySetFormula(Cell cell) {
+        }
+
+        @Override
+        public void notifyDeleteCell(Cell cell) {
+        }
+
+        @Override
+        public void notifyUpdateCell(Cell cell) {
+        }
+
+        @Override
+        public CellValue evaluate(Cell cell) {
+            return null;
+        }
+
+        @Override
+        public Cell evaluateInCell(Cell cell) {
+            return null;
+        }
+
+        @Override
+        public void setupReferencedWorkbooks(Map<String, FormulaEvaluator> workbooks) {
+        }
+
+        @Override
+        public void setDebugEvaluationOutputForNextEval(boolean value) {
+        }
+
+        @Override
+        public void setIgnoreMissingWorkbooks(boolean ignore) {
+        }
+
+        @Override
+        public void evaluateAll() {
+        }
+
+        @Override
+        public CellType evaluateFormulaCell(Cell cell) {
+            return cell.getCachedFormulaResultType();
+        }
+
+        /**
+         * @since POI 3.15 beta 3
+         * @deprecated POI 3.15 beta 3. Will be deleted when we make the CellType enum transition. See bug 59791.
+         */
+        @Deprecated
+        @Removal(version = "4.2")
+        @Internal(since = "POI 3.15 beta 3")
+        @Override
+        public CellType evaluateFormulaCellEnum(Cell cell) {
+            return evaluateFormulaCell(cell);
+        }
+    };
 
     public static void importExcel(ImportReq req) {
         checkNotEmpty(req.getFilePath(), "文件路径");
@@ -34,9 +108,6 @@ public class ExcelUtil {
         try {
             FileUtil.downloadFile(fileUrl, localPath);
             file = new File(localPath);
-            if (!file.exists()) {
-                fail("文件下载失败");
-            }
 
             Workbook workbook;
             try (InputStream in = new FileInputStream(file)) {
@@ -242,41 +313,13 @@ public class ExcelUtil {
     }
 
     public static String getStringCellValue(Row row, int cellNum, String cellName) {
-        String strVal = "";
         Cell cell = row.getCell(cellNum);
-
-        if (cellName != null && cell == null) {
+        String strVal = DATA_FORMATTER.formatCellValue(cell, DUMMY_EVALUATOR);
+        if (cellName != null && StringUtils.isBlank(strVal)) {
             String msg = "导入失败！第" + (row.getRowNum() + 1) + "行的" + cellName + "不能为空";
             fail(msg);
-//            throw new ServiceException(ResponseConstant.BUSSINESS_ERR, msg);
-        }
-
-        if (cell != null) {
-            CellType cellType = cell.getCellType();
-            if (cellType == CellType.FORMULA) {
-                cellType = cell.getCachedFormulaResultType();
-            }
-            switch (cellType) {
-                case STRING:
-                    RichTextString richStringVal = cell.getRichStringCellValue();
-                    strVal = richStringVal.getString();
-                    break;
-                case NUMERIC:
-                    double doubleVal = cell.getNumericCellValue();
-                    strVal = Double.toString(doubleVal);
-                    break;
-                case BOOLEAN:
-                    boolean booleanVal = cell.getBooleanCellValue();
-                    strVal = Boolean.toString(booleanVal);
-                    break;
-            }
-            if (cellName != null && StringUtils.isBlank(strVal)) {
-                String msg = "导入失败！第" + (row.getRowNum() + 1) + "行的" + cellName + "不能为空";
-                fail(msg);
 //                throw new ServiceException(ResponseConstant.BUSSINESS_ERR, msg);
-            }
         }
-
         return strVal;
     }
 
@@ -286,8 +329,7 @@ public class ExcelUtil {
 
     public static Integer getIntegerCellValue(Row row, int cellNum, String cellName) {
         String stringValue = getStringCellValue(row, cellNum, cellName);
-        return StringUtils.isBlank(stringValue) ? null :
-                Double.valueOf(stringValue).intValue(); //若Excel中的值是数值类型（double），那么读取到的值会有小数点
+        return StringUtils.isBlank(stringValue) ? null : Integer.valueOf(stringValue);
     }
 
     public static Integer getIntegerCellValue(Row row, int cellNum) {
