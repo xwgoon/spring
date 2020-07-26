@@ -42,6 +42,8 @@ dependencies {
     //必须加classifier:'jdk15'，否则不能引入json-lib包，即不能使用JSONObject等。
     compile group: 'net.sf.json-lib', name: 'json-lib', version: '2.4', classifier:'jdk15'
 
+    compile group: 'com.alibaba', name: 'fastjson', version: '1.2.72'
+
     //未用到
 //   compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.5'
 //    compile group: 'com.google.code.gson', name: 'gson', version: '2.8.5'
