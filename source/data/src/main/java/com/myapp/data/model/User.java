@@ -20,6 +20,7 @@ public class User
     private Long id;
     private String name;
     private Integer sex;
+    private Integer age;
     private String mobile;
     private Address address;
     private List<String> list;
@@ -70,6 +71,12 @@ public class User
     public User(String name, Integer sex) {
         this.name = name;
         this.sex = sex;
+    }
+
+    public User(String name, Integer sex, Integer age) {
+        this.name = name;
+        this.sex = sex;
+        this.age = age;
     }
 
     public User(String name) {
@@ -140,21 +147,32 @@ public class User
         this.sex = sex;
     }
 
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", sex=" + sex +
+                ", age=" + age +
                 ", mobile='" + mobile + '\'' +
                 ", address=" + address +
                 ", list=" + list +
                 ", set=" + set +
                 ", map=" + map +
                 ", properties=" + properties +
+                ", resource=" + resource +
                 '}';
     }
 
-//    @PostConstruct
+    //    @PostConstruct
 //    public void postConstruct() {
 //        System.out.println("【postConstruct()】");
 //    }

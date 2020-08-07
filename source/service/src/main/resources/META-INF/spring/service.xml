@@ -138,4 +138,12 @@
     <!--<bean id="userService" class="com.myapp.service.service.impl.UserServiceImpl">-->
     <!--</bean>-->
 
+<!--    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="plugins">
+            <array>
+                <bean id="sqlLogInterceptor" class="com.adas.interceptor.SqlLogInterceptor"/>
+            </array>
+        </property>
+    </bean>-->
+
 </beans>
