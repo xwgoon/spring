@@ -1,6 +1,8 @@
 package com.myapp.service.util.excel;
 
 import com.myapp.data.model.User;
+import com.myapp.service.util.common.CollectionUtil;
+import com.myapp.service.util.file.FileUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.ss.usermodel.*;
@@ -26,6 +28,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Function;
 
+import static com.myapp.service.util.common.CommonUtil.checkNotEmpty;
 import static com.myapp.service.util.common.CommonUtil.fail;
 import static com.myapp.service.util.file.FileUtil.PropConstant_CACHE_IMAGE_ROOT;
 import static com.myapp.service.util.file.FileUtil.PropConstant_FILE_DOWNLOAD_URL;
@@ -150,22 +153,18 @@ public class ExcelUtil {
         }
     }
 
-    public static void setTitleStyle(Workbook workbook) {
-        CellStyle titleStyle = workbook.createCellStyle();
-        titleStyle.setAlignment(HorizontalAlignment.CENTER); //水平居中
-        titleStyle.setVerticalAlignment(VerticalAlignment.CENTER); //垂直居中
-        titleStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        titleStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex()); //背景色
-//        titleStyle.setWrapText(true);  //允许单元格中内容换行
+    public static void setTitleRowStyle(Sheet sheet) {
+        CellStyle cellStyle = sheet.getWorkbook().createCellStyle();
+        cellStyle.setAlignment(HorizontalAlignment.CENTER); //水平居中
+        cellStyle.setVerticalAlignment(VerticalAlignment.CENTER); //垂直居中
+        cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex()); //背景色
+//        cellStyle.setWrapText(true);  //允许单元格中内容换行
 
-        for (Sheet sheet : workbook) {
-            Row titleRow = sheet.getRow(0);
-            if (titleRow == null) continue;
-            for (Cell cell : titleRow) {
-                cell.setCellStyle(titleStyle);
-            }
-            sheet.createFreezePane(0, 1, 0, 1); //固定第一行
+        for (Cell cell : sheet.getRow(0)) {
+            cell.setCellStyle(cellStyle);
         }
+        sheet.createFreezePane(0, 1, 0, 1); //固定第一行
     }
 
     public static void addValidation(Sheet sheet, Map<Integer, Collection<String>> colValuesMap) {
@@ -250,17 +249,15 @@ public class ExcelUtil {
 
 
     public static void importExcel(ImportReq req) {
-//        checkNotEmpty(req.getFilePath(), "文件路径");
+        checkNotEmpty(req.getFilePath(), "文件路径");
 
         String fileUrl = PropConstant_FILE_DOWNLOAD_URL + req.getFilePath();
         String localPath = PropConstant_CACHE_IMAGE_ROOT + req.getFilePath();
         File file = null;
         Workbook workbook = null;
         try {
-//            FileUtil.downloadFile(fileUrl, localPath);
-//            file = new File(localPath);
-
-            file = new File("C:\\Users\\Administrator\\Desktop\\1596437442109.xlsx");
+            FileUtil.downloadFile(fileUrl, localPath);
+            file = new File(localPath);
 
             workbook = WorkbookFactory.create(file);
             Sheet sheet = workbook.getSheetAt(0);
@@ -294,8 +291,8 @@ public class ExcelUtil {
                 fail("Excel中无数据");
             }
 
-            /*List<List<User>> userSplitList = CollectionUtil.split(userList);
-            userSplitList.forEach(it -> userMapper.insertAll(it));*/
+            List<List<User>> userSplitList = CollectionUtil.split(userList);
+//            userSplitList.forEach(it -> userMapper.insertAll(it));
         } catch (IOException e) {
             e.printStackTrace();
             fail("文件导入失败");
@@ -308,9 +305,9 @@ public class ExcelUtil {
                 }
             }
             if (file != null && file.exists()) {
-//                if (!file.delete()) {
-//                    fail("文件删除失败");
-//                }
+                if (!file.delete()) {
+                    fail("文件删除失败");
+                }
             }
         }
     }
@@ -321,7 +318,7 @@ public class ExcelUtil {
 
         Map<Integer, Collection<String>> colValuesMap = new HashMap<>();
         colValuesMap.put(sexCellNum, sexMap.values());
-        addValidation(sheet, colValuesMap);
+        ExcelUtil.addValidation(sheet, colValuesMap);
 
         int rowNum = 0, cellNum = 0;
         Row row = sheet.createRow(rowNum);
@@ -329,7 +326,7 @@ public class ExcelUtil {
         row.createCell(++cellNum).setCellValue("姓名");
         row.createCell(++cellNum).setCellValue("性别");
         row.createCell(++cellNum).setCellValue("年龄");
-        setTitleStyle(workbook);
+        ExcelUtil.setTitleRowStyle(sheet);
 
         List<User> list = new ArrayList<>();
         list.add(new User("张三", 1, 20));
