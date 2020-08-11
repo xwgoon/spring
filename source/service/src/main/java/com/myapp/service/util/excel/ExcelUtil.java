@@ -2,24 +2,25 @@ package com.myapp.service.util.excel;
 
 import com.myapp.data.model.User;
 import com.myapp.service.util.common.CollectionUtil;
+import com.myapp.service.util.common.ResponseConstant;
+import com.myapp.service.util.common.ServiceException;
 import com.myapp.service.util.file.FileUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.ss.util.WorkbookUtil;
+import org.apache.poi.util.IOUtils;
 import org.apache.poi.util.Internal;
 import org.apache.poi.util.Removal;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.file.Files;
@@ -132,8 +133,7 @@ public class ExcelUtil {
             workbook.close();
         } catch (IOException e) {
             e.printStackTrace();
-            fail("导出失败");
-//            throw new ServiceException(ResponseConstant.BUSSINESS_ERR, "导出失败");
+            throw new ServiceException(ResponseConstant.BUSINESS_ERR, "导出失败");
         }
     }
 
@@ -148,8 +148,7 @@ public class ExcelUtil {
             workbook.close();
         } catch (IOException e) {
             e.printStackTrace();
-            fail("导出失败");
-//            throw new ServiceException(ResponseConstant.BUSSINESS_ERR, "导出失败");
+            throw new ServiceException(ResponseConstant.BUSINESS_ERR, "导出失败");
         }
     }
 
@@ -164,6 +163,7 @@ public class ExcelUtil {
         for (Cell cell : sheet.getRow(0)) {
             cell.setCellStyle(cellStyle);
         }
+
         sheet.createFreezePane(0, 1, 0, 1); //固定第一行
     }
 
@@ -188,6 +188,44 @@ public class ExcelUtil {
         });
     }
 
+    public static void addPicture(Workbook workbook, CreationHelper creationHelper, Drawing<?> drawing,
+                                  int row1, int col1, String pictureUrl) {
+        String extension = StringUtils.substringAfterLast(pictureUrl, ".").toUpperCase();
+        Integer pictureType = null;
+        switch (extension) {
+            case "PNG":
+                pictureType = Workbook.PICTURE_TYPE_PNG;
+                break;
+            case "JPG":
+            case "JPEG":
+                pictureType = Workbook.PICTURE_TYPE_JPEG;
+                break;
+        }
+        if (pictureType == null && workbook.getSpreadsheetVersion() == SpreadsheetVersion.EXCEL2007) {
+            if ("GIF".equals(extension)) {
+                pictureType = XSSFWorkbook.PICTURE_TYPE_GIF;
+            }
+        }
+        if (pictureType == null) {
+            throw new ServiceException(ResponseConstant.BUSINESS_ERR, extension + "图片格式不支持");
+        }
+
+        ClientAnchor clientAnchor = creationHelper.createClientAnchor();
+        clientAnchor.setAnchorType(ClientAnchor.AnchorType.MOVE_AND_RESIZE);
+        clientAnchor.setRow1(row1);
+        clientAnchor.setCol1(col1);
+        clientAnchor.setRow2(row1 + 1);
+        clientAnchor.setCol2(col1 + 1);
+        try (FileInputStream inputStream = new FileInputStream(pictureUrl)) {
+            int pictureIndex = workbook.addPicture(IOUtils.toByteArray(inputStream), pictureType);
+            Picture picture = drawing.createPicture(clientAnchor, pictureIndex);
+//        picture.resize(0.2);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new ServiceException(ResponseConstant.BUSINESS_ERR, "添加图片失败");
+        }
+    }
+
     public static String formatNull(Object obj) {
         return obj == null ? "" : obj.toString();
     }
@@ -197,8 +235,7 @@ public class ExcelUtil {
         String strVal = DATA_FORMATTER.formatCellValue(cell, DUMMY_EVALUATOR);
         if (cellName != null && StringUtils.isBlank(strVal)) {
             String msg = "导入失败！第" + (row.getRowNum() + 1) + "行的" + cellName + "不能为空";
-            fail(msg);
-//                throw new ServiceException(ResponseConstant.BUSSINESS_ERR, msg);
+            throw new ServiceException(ResponseConstant.BUSINESS_ERR, msg);
         }
         return strVal;
     }
@@ -313,8 +350,19 @@ public class ExcelUtil {
     }
 
     public static void exportExcel(ExportReq req) {
+        List<User> list = new ArrayList<>();
+        list.add(new User("张三", 1, 20, "C:\\Users\\Administrator\\Downloads\\1.jpg"));
+        list.add(new User("李四", 2, 25, "C:\\Users\\Administrator\\Downloads\\2.png"));
+        list.add(new User("王五", null, null, "C:\\Users\\Administrator\\Downloads\\3.gif"));
+
         Workbook workbook = new SXSSFWorkbook();
         Sheet sheet = workbook.createSheet(WorkbookUtil.createSafeSheetName("用户/列表"));
+
+        sheet.setDefaultRowHeight((short) (20 * 60));
+        sheet.setDefaultColumnWidth(10);
+
+        CreationHelper creationHelper = workbook.getCreationHelper();
+        Drawing<?> drawing = sheet.createDrawingPatriarch();
 
         Map<Integer, Collection<String>> colValuesMap = new HashMap<>();
         colValuesMap.put(sexCellNum, sexMap.values());
@@ -326,12 +374,8 @@ public class ExcelUtil {
         row.createCell(++cellNum).setCellValue("姓名");
         row.createCell(++cellNum).setCellValue("性别");
         row.createCell(++cellNum).setCellValue("年龄");
+        row.createCell(++cellNum).setCellValue("头像");
         ExcelUtil.setTitleRowStyle(sheet);
-
-        List<User> list = new ArrayList<>();
-        list.add(new User("张三", 1, 20));
-        list.add(new User("李四", 2, 25));
-        list.add(new User("王五", null, null));
 
         for (User item : list) {
             row = sheet.createRow(++rowNum);
@@ -339,6 +383,7 @@ public class ExcelUtil {
             row.createCell(++cellNum).setCellValue(item.getName());
             row.createCell(++cellNum).setCellValue(sexMap.get(item.getSex()));
             row.createCell(++cellNum).setCellValue(formatNull(item.getAge()));
+            addPicture(workbook, creationHelper, drawing, rowNum, ++cellNum, item.getAvatar());
         }
 
         //合并单元格
@@ -352,8 +397,8 @@ public class ExcelUtil {
         cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex()); //背景色
         cell.setCellStyle(cellStyle);*/
 
-        ExcelUtil.exportToResponse(workbook, "用户列表");
-//        ExcelUtil.exportToFile(workbook, "/Users/xw/Desktop/测试/" + System.currentTimeMillis() + ".xlsx");
+//        ExcelUtil.exportToResponse(workbook, "用户列表");
+        ExcelUtil.exportToFile(workbook, "/Users/xw/Desktop/测试/" + System.currentTimeMillis() + ".xlsx");
     }
 
     private static final int sexCellNum = 2;
@@ -395,8 +440,8 @@ public class ExcelUtil {
 //        System.out.println(CellReference.convertNumToColString(26)); //"AA"
 //        System.out.println(CellReference.convertColStringToIndex("AA")); //26
 
-//        exportExcel(null);
-        importExcel(new ImportReq());
+        exportExcel(null);
+//        importExcel(new ImportReq());
 
     }
 

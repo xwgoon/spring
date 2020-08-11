@@ -1,12 +1,7 @@
 package com.myapp.data.model;
 
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.xml.bind.SchemaOutputResolver;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -21,6 +16,7 @@ public class User
     private String name;
     private Integer sex;
     private Integer age;
+    private String avatar;
     private String mobile;
     private Address address;
     private List<String> list;
@@ -77,6 +73,13 @@ public class User
         this.name = name;
         this.sex = sex;
         this.age = age;
+    }
+
+    public User(String name, Integer sex, Integer age, String avatar) {
+        this.name = name;
+        this.sex = sex;
+        this.age = age;
+        this.avatar = avatar;
     }
 
     public User(String name) {
@@ -218,5 +221,13 @@ public class User
                     "number='" + number + '\'' +
                     '}';
         }
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }
