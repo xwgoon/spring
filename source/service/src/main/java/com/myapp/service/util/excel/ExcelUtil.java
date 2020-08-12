@@ -6,6 +6,14 @@ import com.myapp.service.util.common.ResponseConstant;
 import com.myapp.service.util.common.ServiceException;
 import com.myapp.service.util.file.FileUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.record.crypto.Biff8EncryptionKey;
+import org.apache.poi.hssf.usermodel.HSSFPatriarch;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.poifs.crypt.Decryptor;
+import org.apache.poi.poifs.crypt.EncryptionInfo;
+import org.apache.poi.poifs.crypt.EncryptionMode;
+import org.apache.poi.poifs.crypt.Encryptor;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddressList;
@@ -14,6 +22,8 @@ import org.apache.poi.util.IOUtils;
 import org.apache.poi.util.Internal;
 import org.apache.poi.util.Removal;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFDrawing;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -22,10 +32,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.math.BigDecimal;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.GeneralSecurityException;
 import java.util.*;
 import java.util.function.Function;
 
@@ -125,8 +137,7 @@ public class ExcelUtil {
             } else {
                 fileName = URLEncoder.encode(fileName, "UTF-8");
             }
-            String extension = workbook.getSpreadsheetVersion() == SpreadsheetVersion.EXCEL97 ? "xls" : "xlsx";
-            response.setHeader("content-disposition", "attachment;filename=" + fileName + "." + extension);
+            response.setHeader("content-disposition", "attachment;filename=" + fileName + getExcelExtension(workbook));
             OutputStream out = response.getOutputStream();
             workbook.write(out);
             out.flush();
@@ -138,11 +149,12 @@ public class ExcelUtil {
     }
 
     public static void exportToFile(Workbook workbook, String filePath) {
+        String fileFullPath = filePath + getExcelExtension(workbook);
+        Path path = Paths.get(fileFullPath);
         try {
-            Path path = Paths.get(filePath);
             Files.createDirectories(path.getParent());
             Files.createFile(path);
-            try (FileOutputStream out = new FileOutputStream(filePath)) {
+            try (OutputStream out = new FileOutputStream(fileFullPath)) {
                 workbook.write(out);
             }
             workbook.close();
@@ -150,6 +162,67 @@ public class ExcelUtil {
             e.printStackTrace();
             throw new ServiceException(ResponseConstant.BUSINESS_ERR, "导出失败");
         }
+    }
+
+    public static void exportToFile(Workbook workbook, String filePath, String password) {
+        if (isHSSFWorkbook(workbook)) {
+            Biff8EncryptionKey.setCurrentUserPassword(password);
+            exportToFile(workbook, filePath);
+        } else {
+            try (POIFSFileSystem fs = new POIFSFileSystem()) {
+                EncryptionInfo info = new EncryptionInfo(EncryptionMode.agile);
+                Encryptor enc = info.getEncryptor();
+                enc.confirmPassword(password);
+
+                try (OutputStream out = enc.getDataStream(fs)) {
+                    workbook.write(out);
+                }
+
+                String fileFullPath = filePath + getExcelExtension(workbook);
+                Path path = Paths.get(fileFullPath);
+                Files.createDirectories(path.getParent());
+                Files.createFile(path);
+                try (OutputStream out = new FileOutputStream(fileFullPath)) {
+                    fs.writeFilesystem(out);
+                }
+
+                workbook.close();
+            } catch (IOException | GeneralSecurityException e) {
+                e.printStackTrace();
+                throw new ServiceException(ResponseConstant.BUSINESS_ERR, "导出失败");
+            }
+        }
+    }
+
+    public static Workbook createWorkbook(File file, String password) throws IOException {
+        Workbook workbook;
+        String extension = StringUtils.substringAfterLast(file.getName(), ".").toLowerCase();
+        if ("xls".equals(extension)) {
+            Biff8EncryptionKey.setCurrentUserPassword(password);
+            workbook = WorkbookFactory.create(file);
+        } else {
+            POIFSFileSystem fs = new POIFSFileSystem(file);
+            EncryptionInfo info = new EncryptionInfo(fs);
+            Decryptor d = Decryptor.getInstance(info);
+            try {
+                if (!d.verifyPassword(password)) {
+                    throw new ServiceException(ResponseConstant.BUSINESS_ERR, "Workbook密码错误");
+                }
+                workbook = WorkbookFactory.create(d.getDataStream(fs));
+            } catch (GeneralSecurityException e) {
+                e.printStackTrace();
+                throw new ServiceException(ResponseConstant.BUSINESS_ERR, "Workbook解密失败");
+            }
+        }
+        return workbook;
+    }
+
+    private static boolean isHSSFWorkbook(Workbook workbook) {
+        return workbook.getSpreadsheetVersion() == SpreadsheetVersion.EXCEL97;
+    }
+
+    private static String getExcelExtension(Workbook workbook) {
+        return isHSSFWorkbook(workbook) ? ".xls" : ".xlsx";
     }
 
     public static void setTitleRowStyle(Sheet sheet) {
@@ -188,6 +261,9 @@ public class ExcelUtil {
         });
     }
 
+    /**
+     * 添加图片
+     */
     public static void addPicture(Workbook workbook, CreationHelper creationHelper, Drawing<?> drawing,
                                   int row1, int col1, String pictureUrl) {
         String extension = StringUtils.substringAfterLast(pictureUrl, ".").toUpperCase();
@@ -201,7 +277,7 @@ public class ExcelUtil {
                 pictureType = Workbook.PICTURE_TYPE_JPEG;
                 break;
         }
-        if (pictureType == null && workbook.getSpreadsheetVersion() == SpreadsheetVersion.EXCEL2007) {
+        if (pictureType == null && !isHSSFWorkbook(workbook)) {
             if ("GIF".equals(extension)) {
                 pictureType = XSSFWorkbook.PICTURE_TYPE_GIF;
             }
@@ -216,13 +292,41 @@ public class ExcelUtil {
         clientAnchor.setCol1(col1);
         clientAnchor.setRow2(row1 + 1);
         clientAnchor.setCol2(col1 + 1);
-        try (FileInputStream inputStream = new FileInputStream(pictureUrl)) {
+        try (InputStream inputStream = new URL(pictureUrl).openStream()) {
             int pictureIndex = workbook.addPicture(IOUtils.toByteArray(inputStream), pictureType);
             Picture picture = drawing.createPicture(clientAnchor, pictureIndex);
 //        picture.resize(0.2);
         } catch (IOException e) {
             e.printStackTrace();
             throw new ServiceException(ResponseConstant.BUSINESS_ERR, "添加图片失败");
+        }
+    }
+
+    /**
+     * 获取图片
+     */
+    public static void getPictures(Sheet sheet) throws IOException {
+        List<? extends Shape> shapes;
+        if (sheet instanceof HSSFSheet) {
+            HSSFPatriarch patriarch = ((HSSFSheet) sheet).getDrawingPatriarch();
+            if (patriarch == null) return;
+            shapes = patriarch.getChildren();
+        } else {
+            XSSFDrawing drawing = ((XSSFSheet) sheet).getDrawingPatriarch();
+            if (drawing == null) return;
+            shapes = drawing.getShapes();
+        }
+        for (Shape shape : shapes) {
+            Picture picture = (Picture) shape;
+            ClientAnchor clientAnchor = picture.getClientAnchor();
+            System.out.println("col1: " + clientAnchor.getCol1() + ", col2: " + clientAnchor.getCol2() + ", row1: " + clientAnchor.getRow1() + ", row2: " + clientAnchor.getRow2());
+//                System.out.println("x1: " + clientAnchor.getDx1() + ", x2: " + clientAnchor.getDx2() + ", y1: " + clientAnchor.getDy1() + ", y2: " + clientAnchor.getDy2());
+
+            PictureData pictureData = picture.getPictureData();
+            byte[] data = pictureData.getData();
+            try (FileOutputStream out = new FileOutputStream("/Users/xw/Desktop/测试/" + UUID.randomUUID() + "." + pictureData.suggestFileExtension())) {
+                out.write(data);
+            }
         }
     }
 
@@ -296,8 +400,14 @@ public class ExcelUtil {
             FileUtil.downloadFile(fileUrl, localPath);
             file = new File(localPath);
 
+//            file = new File("/Users/xw/Desktop/测试/1597241828505.xls");
+//            file = new File("/Users/xw/Desktop/测试/1597215197413.xlsx");
+
             workbook = WorkbookFactory.create(file);
+//            workbook = createWorkbook(file, "a1");
             Sheet sheet = workbook.getSheetAt(0);
+
+//            getPictures(sheet);
 
             List<User> userList = new ArrayList<>();
 //            short lastCellNum = sheet.getRow(0).getLastCellNum();
@@ -350,11 +460,23 @@ public class ExcelUtil {
     }
 
     public static void exportExcel(ExportReq req) {
-        List<User> list = new ArrayList<>();
-        list.add(new User("张三", 1, 20, "C:\\Users\\Administrator\\Downloads\\1.jpg"));
-        list.add(new User("李四", 2, 25, "C:\\Users\\Administrator\\Downloads\\2.png"));
-        list.add(new User("王五", null, null, "C:\\Users\\Administrator\\Downloads\\3.gif"));
+        String pngPic = "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1597212959041&di=" +
+                "832afef8b1d6450729c2a4765e2099e8&imgtype=0&src=http%3A%2F%2Fpic21.nipic.com%2F20120610" +
+                "%2F10296557_193505570000_2.png";
+        String jpgPic = "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1597212330302&di=" +
+                "677d661a3f72609f80567305ef3f44af&imgtype=0&src=http%3A%2F%2Fimg1.imgtn.bdimg.com%2Fit%2Fu" +
+                "%3D2991160191%2C2890588101%26fm%3D214%26gp%3D0.jpg";
+        String gifPic = "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1597213494593&di=" +
+                "d6a2f5fea41cca6c9d70f4b049fccf39&imgtype=0&src=http%3A%2F%2Fhasgyy.com%2Fuploads%2Fallimg" +
+                "%2F191122%2F1-191122093j6243.gif";
 
+        List<User> list = new ArrayList<>();
+        list.add(new User("张三", 1, 20, pngPic));
+        list.add(new User("李四", 2, 25, jpgPic));
+        list.add(new User("王五", null, null, gifPic));
+
+//        Workbook workbook = new HSSFWorkbook();
+//        Workbook workbook = new XSSFWorkbook();
         Workbook workbook = new SXSSFWorkbook();
         Sheet sheet = workbook.createSheet(WorkbookUtil.createSafeSheetName("用户/列表"));
 
@@ -383,7 +505,7 @@ public class ExcelUtil {
             row.createCell(++cellNum).setCellValue(item.getName());
             row.createCell(++cellNum).setCellValue(sexMap.get(item.getSex()));
             row.createCell(++cellNum).setCellValue(formatNull(item.getAge()));
-            addPicture(workbook, creationHelper, drawing, rowNum, ++cellNum, item.getAvatar());
+            ExcelUtil.addPicture(workbook, creationHelper, drawing, rowNum, ++cellNum, item.getAvatar());
         }
 
         //合并单元格
@@ -398,7 +520,7 @@ public class ExcelUtil {
         cell.setCellStyle(cellStyle);*/
 
 //        ExcelUtil.exportToResponse(workbook, "用户列表");
-        ExcelUtil.exportToFile(workbook, "/Users/xw/Desktop/测试/" + System.currentTimeMillis() + ".xlsx");
+        ExcelUtil.exportToFile(workbook, "/Users/xw/Desktop/测试/" + System.currentTimeMillis());
     }
 
     private static final int sexCellNum = 2;
