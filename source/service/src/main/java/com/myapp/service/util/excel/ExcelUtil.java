@@ -303,7 +303,7 @@ public class ExcelUtil {
     }
 
     /**
-     * 获取图片
+     * 获取指定sheet中的图片，而workbook.getAllPictures()是获取所有sheet中的图片。
      */
     public static void getPictures(Sheet sheet) throws IOException {
         List<? extends Shape> shapes;

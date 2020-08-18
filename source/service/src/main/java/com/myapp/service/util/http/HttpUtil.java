@@ -2,7 +2,6 @@ package com.myapp.service.util.http;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder;
@@ -30,7 +29,7 @@ public class HttpUtil {
 
     public static String postForm(String uri, Map<String, Object> params) {
         HttpPost httpPost = new HttpPost(uri);
-        if (MapUtils.isNotEmpty(params)) {
+        if (params != null && params.size() > 0) {
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
             params.forEach((key, value) -> {
                 if (value instanceof File) {
@@ -49,7 +48,7 @@ public class HttpUtil {
     public static String postJson(String uri, Map<String, Object> params) {
         HttpPost httpPost = new HttpPost(uri);
         httpPost.setHeader("Content-type", "application/json;charset=UTF-8");
-        if (MapUtils.isNotEmpty(params)) {
+        if (params != null && params.size() > 0) {
             String jsonString = new JSONObject(params).toJSONString();
             StringEntity entity = new StringEntity(jsonString, TEXT_PLAIN_UTF8);
             httpPost.setEntity(entity);
@@ -61,7 +60,7 @@ public class HttpUtil {
     public static String get(String uri, Map<String, Object> params) {
         try {
             URIBuilder builder = new URIBuilder(uri, StandardCharsets.UTF_8);
-            if (MapUtils.isNotEmpty(params)) {
+            if (params != null && params.size() > 0) {
                 params.forEach((key, value) -> {
                     String strVal = value == null ? null : value.toString();
                     builder.addParameter(key, strVal);
