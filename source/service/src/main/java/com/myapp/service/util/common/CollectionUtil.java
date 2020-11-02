@@ -25,7 +25,8 @@ public class CollectionUtil {
             } else {
                 list1.add(list2);
                 list2 = new ArrayList<>();
-                n = 0;
+                list2.add(t);
+                n = 1;
             }
         }
 

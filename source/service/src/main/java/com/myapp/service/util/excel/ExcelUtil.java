@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.record.crypto.Biff8EncryptionKey;
 import org.apache.poi.hssf.usermodel.HSSFPatriarch;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.crypt.Decryptor;
 import org.apache.poi.poifs.crypt.EncryptionInfo;
 import org.apache.poi.poifs.crypt.EncryptionMode;
@@ -16,6 +17,7 @@ import org.apache.poi.poifs.crypt.Encryptor;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.util.IOUtils;
@@ -25,6 +27,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFDrawing;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.omg.CORBA.IntHolder;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -39,6 +42,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 import static com.myapp.service.util.common.CommonUtil.checkNotEmpty;
@@ -237,7 +242,7 @@ public class ExcelUtil {
             cell.setCellStyle(cellStyle);
         }
 
-        sheet.createFreezePane(0, 1, 0, 1); //固定第一行
+        sheet.createFreezePane(0, 1); //固定第一行
     }
 
     public static void addValidation(Sheet sheet, Map<Integer, Collection<String>> colValuesMap) {
@@ -395,7 +400,6 @@ public class ExcelUtil {
         String fileUrl = PropConstant_FILE_DOWNLOAD_URL + req.getFilePath();
         String localPath = PropConstant_CACHE_IMAGE_ROOT + req.getFilePath();
         File file = null;
-        Workbook workbook = null;
         try {
             FileUtil.downloadFile(fileUrl, localPath);
             file = new File(localPath);
@@ -403,17 +407,14 @@ public class ExcelUtil {
 //            file = new File("/Users/xw/Desktop/测试/1597241828505.xls");
 //            file = new File("/Users/xw/Desktop/测试/1597215197413.xlsx");
 
-            workbook = WorkbookFactory.create(file);
-//            workbook = createWorkbook(file, "a1");
-            Sheet sheet = workbook.getSheetAt(0);
-
-//            getPictures(sheet);
-
             List<User> userList = new ArrayList<>();
-//            short lastCellNum = sheet.getRow(0).getLastCellNum();
-            for (int i = 1, lastRowNum = sheet.getLastRowNum(); i <= lastRowNum; i++) {
-                Row row = sheet.getRow(i);
-                if (row == null) continue;
+            try (Workbook workbook = WorkbookFactory.create(file)) {
+                Sheet sheet = workbook.getSheetAt(0);
+
+                //            short lastCellNum = sheet.getRow(0).getLastCellNum();
+                for (int i = 1, lastRowNum = sheet.getLastRowNum(); i <= lastRowNum; i++) {
+                    Row row = sheet.getRow(i);
+                    if (row == null) continue;
 
                 /*boolean skip = true;
                 for (short j = 0; j <= lastCellNum; j++) {
@@ -426,31 +427,26 @@ public class ExcelUtil {
                     continue;
                 }*/
 
-                User user = new User();
-                user.setName(getStringCellValue(row, 1, "姓名"));
-                user.setSex(parseType(row, sexCellNum, sexMap));
-                user.setAge(getIntegerCellValue(row, 3));
+                    User user = new User();
+                    user.setName(getStringCellValue(row, 1, "姓名"));
+                    user.setSex(parseType(row, sexCellNum, sexMap));
+                    user.setAge(getIntegerCellValue(row, 3));
 
-                userList.add(user);
+                    userList.add(user);
+                }
+
+                //            getPictures(sheet);
             }
 
             if (userList.size() == 0) {
                 fail("Excel中无数据");
             }
 
-            List<List<User>> userSplitList = CollectionUtil.split(userList);
-//            userSplitList.forEach(it -> userMapper.insertAll(it));
+//            CollectionUtil.split(userList).forEach(it -> userMapper.insertAll(it));
         } catch (IOException e) {
             e.printStackTrace();
             fail("文件导入失败");
         } finally {
-            if (workbook != null) {
-                try {
-                    workbook.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
             if (file != null && file.exists()) {
                 if (!file.delete()) {
                     fail("文件删除失败");
@@ -460,7 +456,7 @@ public class ExcelUtil {
     }
 
     public static void exportExcel(ExportReq req) {
-        String pngPic = "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1597212959041&di=" +
+        /*String pngPic = "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1597212959041&di=" +
                 "832afef8b1d6450729c2a4765e2099e8&imgtype=0&src=http%3A%2F%2Fpic21.nipic.com%2F20120610" +
                 "%2F10296557_193505570000_2.png";
         String jpgPic = "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1597212330302&di=" +
@@ -468,27 +464,34 @@ public class ExcelUtil {
                 "%3D2991160191%2C2890588101%26fm%3D214%26gp%3D0.jpg";
         String gifPic = "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1597213494593&di=" +
                 "d6a2f5fea41cca6c9d70f4b049fccf39&imgtype=0&src=http%3A%2F%2Fhasgyy.com%2Fuploads%2Fallimg" +
-                "%2F191122%2F1-191122093j6243.gif";
+                "%2F191122%2F1-191122093j6243.gif";*/
 
         List<User> list = new ArrayList<>();
-        list.add(new User("张三", 1, 20, pngPic));
+/*        list.add(new User("张三", 1, 20, pngPic));
         list.add(new User("李四", 2, 25, jpgPic));
-        list.add(new User("王五", null, null, gifPic));
+        list.add(new User("王五", null, null, gifPic));*/
+//        list.add(new User("张三", 1, 20));
+//        list.add(new User("李四", 2, 25));
+//        list.add(new User("王五", null, null));
+
+        for (int i = 0; i < 110; i++) {
+            list.add(new User(String.valueOf(i)));
+        }
 
 //        Workbook workbook = new HSSFWorkbook();
 //        Workbook workbook = new XSSFWorkbook();
         Workbook workbook = new SXSSFWorkbook();
         Sheet sheet = workbook.createSheet(WorkbookUtil.createSafeSheetName("用户/列表"));
 
-        sheet.setDefaultRowHeight((short) (20 * 60));
+/*        sheet.setDefaultRowHeight((short) (20 * 60));
         sheet.setDefaultColumnWidth(10);
 
         CreationHelper creationHelper = workbook.getCreationHelper();
-        Drawing<?> drawing = sheet.createDrawingPatriarch();
+        Drawing<?> drawing = sheet.createDrawingPatriarch();*/
 
-        Map<Integer, Collection<String>> colValuesMap = new HashMap<>();
+/*        Map<Integer, Collection<String>> colValuesMap = new HashMap<>();
         colValuesMap.put(sexCellNum, sexMap.values());
-        ExcelUtil.addValidation(sheet, colValuesMap);
+        ExcelUtil.addValidation(sheet, colValuesMap);*/
 
         int rowNum = 0, cellNum = 0;
         Row row = sheet.createRow(rowNum);
@@ -505,7 +508,7 @@ public class ExcelUtil {
             row.createCell(++cellNum).setCellValue(item.getName());
             row.createCell(++cellNum).setCellValue(sexMap.get(item.getSex()));
             row.createCell(++cellNum).setCellValue(formatNull(item.getAge()));
-            ExcelUtil.addPicture(workbook, creationHelper, drawing, rowNum, ++cellNum, item.getAvatar());
+//            ExcelUtil.addPicture(workbook, creationHelper, drawing, rowNum, ++cellNum, item.getAvatar());
         }
 
         //合并单元格
@@ -518,6 +521,33 @@ public class ExcelUtil {
         cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex()); //背景色
         cell.setCellStyle(cellStyle);*/
+
+/*        CellStyle cellStyle = workbook.createCellStyle();
+        cellStyle.setAlignment(HorizontalAlignment.CENTER); //水平居中
+        cellStyle.setVerticalAlignment(VerticalAlignment.CENTER); //垂直居中
+
+        Row firstRow=sheet.createRow(0);
+
+        sheet.addMergedRegion(new CellRangeAddress(0, 0, 1, 2));
+        Cell cell = firstRow.createCell(1);
+        cell.setCellValue("已完成摸底");
+        cell.setCellStyle(cellStyle);
+
+        sheet.addMergedRegion(new CellRangeAddress(0, 0, 3, 4));
+        Cell cell1 = firstRow.createCell(3);
+        cell1.setCellValue("今日新增");
+        cell1.setCellStyle(cellStyle);
+
+        CellStyle cellStyle1 = workbook.createCellStyle();
+        cellStyle1.setAlignment(HorizontalAlignment.CENTER); //水平居中
+        cellStyle1.setVerticalAlignment(VerticalAlignment.CENTER); //垂直居中
+        cellStyle1.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        cellStyle1.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex()); //背景色
+        for (Cell c : sheet.getRow(1)) {
+            c.setCellStyle(cellStyle1);
+        }
+
+        sheet.createFreezePane(0, 2); //固定前两行*/
 
 //        ExcelUtil.exportToResponse(workbook, "用户列表");
         ExcelUtil.exportToFile(workbook, "/Users/xw/Desktop/测试/" + System.currentTimeMillis());
@@ -558,12 +588,141 @@ public class ExcelUtil {
     }
 
 
-    public static void main(String[] args) {
+    public static void exportExcel1(Sheet sheet) {
+
+        System.out.println(sheet.getSheetName() + "开始");
+
+        List<User> list = new ArrayList<>();
+
+        for (int i = 0; i < 1500; i++) {
+            list.add(new User(String.valueOf(i)));
+        }
+
+        int rowNum = 0, cellNum = 0;
+        Row row = sheet.createRow(rowNum);
+        row.createCell(cellNum).setCellValue("序号");
+        row.createCell(++cellNum).setCellValue("姓名");
+        row.createCell(++cellNum).setCellValue("性别");
+        row.createCell(++cellNum).setCellValue("年龄");
+        row.createCell(++cellNum).setCellValue("头像");
+        ExcelUtil.setTitleRowStyle(sheet);
+
+        for (User item : list) {
+            row = sheet.createRow(++rowNum);
+            row.createCell(cellNum = 0).setCellValue(rowNum);
+            row.createCell(++cellNum).setCellValue(item.getName());
+            row.createCell(++cellNum).setCellValue(sexMap.get(item.getSex()));
+            row.createCell(++cellNum).setCellValue(formatNull(item.getAge()));
+//            ExcelUtil.addPicture(workbook, creationHelper, drawing, rowNum, ++cellNum, item.getAvatar());
+        }
+
+//        try {
+//            Thread.sleep(1000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+
+        System.out.println(sheet.getSheetName() + "结束");
+
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+//        System.out.println(Runtime.getRuntime().availableProcessors());
+
 //        System.out.println(CellReference.convertNumToColString(26)); //"AA"
 //        System.out.println(CellReference.convertColStringToIndex("AA")); //26
 
-        exportExcel(null);
+//        exportExcel(null);
 //        importExcel(new ImportReq());
+
+//        ExcelUtil excelUtil = new ExcelUtil();
+//        C1 c1 = excelUtil.new C1();
+//        c1.fun2();
+//        c1.fun3();
+
+        long start = System.currentTimeMillis();
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
+        CompletionService<Boolean> completionService = new ExecutorCompletionService<>(executorService);
+//        ExecutorService executorService= Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
+//        Workbook workbook = new SXSSFWorkbook();
+//        for (int i = 0; i < 1400; i++) {
+//            Sheet sheet = workbook.createSheet(i+"-"+WorkbookUtil.createSafeSheetName("用户/列表"));
+//            executorService.execute(()->exportExcel1(sheet));
+////            exportExcel1(sheet);
+//        }
+
+        IntHolder taskNum = new IntHolder(0);
+
+        try {
+            completionService.submit(() -> {
+                System.out.println("第1个任务开始");
+                Thread.sleep(4000);
+                throw new RuntimeException("第1个任务抛异常");
+//            System.out.println("第1个任务结束");
+            });
+            taskNum.value++;
+
+            completionService.submit(() -> {
+                System.out.println("第2个任务开始");
+                Thread.sleep(2000);
+                System.out.println("第2个任务结束");
+                return true;
+            });
+            taskNum.value++;
+
+            completionService.submit(() -> {
+                System.out.println("第3个任务开始");
+                Thread.sleep(8000);
+                System.out.println("第3个任务结束");
+                return true;
+            });
+            taskNum.value++;
+
+//            executorService.shutdown();
+//            executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+
+            for (int i = 0; i < taskNum.value; i++) {
+                try {
+                    Future<Boolean> future = completionService.take(); //blocks if none available
+                    if (!future.get()) { //若任务抛了异常，调用get方法时就会抛出
+                        throw new RuntimeException("任务执行失败");
+                    }
+                    System.out.println("任务执行成功");
+                } catch (Exception e) {
+                    executorService.shutdownNow();
+                    throw e;
+                }
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("耗时：" + (System.currentTimeMillis() - start));
+
+//        ExcelUtil.exportToFile(workbook, "/Users/xw/Desktop/测试/" + System.currentTimeMillis());
+
+    }
+
+    class C1 {
+        void fun1(Runnable runnable) {
+            runnable.run();
+        }
+
+        void fun2() {
+            fun1(() -> System.out.println(this));
+        }
+
+        void fun3() {
+            fun1(new Runnable() {
+                @Override
+                public void run() {
+                    System.out.println(this);
+                }
+            });
+        }
 
     }
 

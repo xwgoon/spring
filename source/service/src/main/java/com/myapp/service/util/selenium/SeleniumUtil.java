@@ -34,6 +34,8 @@ public class SeleniumUtil {
         ChromeOptions chromeOptions = new ChromeOptions();
         chromeOptions.setExperimentalOption("prefs", hashMap);
 
+//        chromeOptions.addArguments("--ignore-certificate-errors","headless");
+
         // 依据 ChromeOptions 来产生 DesiredCapbilities，这时 DesiredCapbilities 也就具备了下载路径的信息
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
         desiredCapabilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
