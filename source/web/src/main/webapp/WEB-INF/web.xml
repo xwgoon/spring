@@ -74,6 +74,15 @@
         <!--<url-pattern>/xmlServletPath/*</url-pattern>&lt;!&ndash;filter是在请求交给servlet之前执行，因此根路径是/contextPath/&ndash;&gt;-->
     <!--</filter-mapping>-->
 
+    <!--<filter>
+        <filter-name>ContentCachingFilter</filter-name>
+        <filter-class>com.myapp.web.filter.ContentCachingFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>ContentCachingFilter</filter-name>
+        <url-pattern>/xmlServletPath/*</url-pattern>
+    </filter-mapping>-->
+
     <!--<error-page>-->
         <!--&lt;!&ndash;<error-code>400</error-code>&ndash;&gt;-->
         <!--<location>/WEB-INF/views/websocket.html</location>-->

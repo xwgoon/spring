@@ -69,7 +69,7 @@ public class HttpUtil {
             HttpGet httpGet = new HttpGet(builder.build());
             return execute(httpGet);
         } catch (URISyntaxException e) {
-            throw new IllegalArgumentException(e.getMessage(), e);
+            throw new IllegalArgumentException(e);
         }
     }
 
@@ -86,8 +86,7 @@ public class HttpUtil {
             EntityUtils.consume(resEntity);
             return resString;
         } catch (IOException | ParseException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 

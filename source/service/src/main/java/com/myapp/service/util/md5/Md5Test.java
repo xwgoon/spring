@@ -15,11 +15,11 @@ public class Md5Test {
         String str = "ILoveJava";
         String result = "35454B055CC325EA1AF2126E27707052";
 //        String hash = md5(str);
-        String hash = md5(new File("E:\\project\\spring\\source\\service\\src\\main\\java\\com\\myapp\\service\\util\\md5\\test.txt"));
+        String hash = md5(new File("C:\\Users\\Administrator\\Desktop\\manager_library_detail_0.xlsx"));
         System.out.println(hash);
-        String hash2 = md5(new File("E:\\project\\spring\\source\\service\\src\\main\\java\\com\\myapp\\service\\util\\md5\\test2.txt"));
+        String hash2 = md5(new File("C:\\Users\\Administrator\\Desktop\\manager_library_detail_1.xlsx"));
         System.out.println(hash2);
-//        System.out.println(result.equals(hash));
+        System.out.println(hash.equals(hash2));
 
     }
 
@@ -41,13 +41,13 @@ public class Md5Test {
 //            MessageDigest md = MessageDigest.getInstance("MD5");
 //            md.update(bytes);
 //            byte[] digest = md.digest();
-//            return DatatypeConverter.printHexBinary(digest).toUpperCase();
+//            return DatatypeConverter.printHexBinary(digest);
 //        } catch (NoSuchAlgorithmException e) {
 //            throw new IllegalArgumentException(e);
 //        }
 
         //二、Apache Commons方式
-        return DigestUtils.md5Hex(bytes).toUpperCase();
+        return DigestUtils.md5Hex(bytes);
     }
 
 
