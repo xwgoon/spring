@@ -3,9 +3,7 @@ package com.myapp.service.util.csv;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.Arrays;
 
 public class CSVTest {
@@ -27,7 +25,7 @@ public class CSVTest {
     private static void openCSVRead() {
         String csvFile = "E:\\project\\spring\\source\\service\\src\\main\\java\\com\\myapp\\service\\util\\csv\\test1.csv";
         String[] line;
-        try (CSVReader reader = new CSVReader(new FileReader(csvFile))){
+        try (CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream(csvFile), "GBK"))) {
 //            reader.skip(1);
             while ((line = reader.readNext()) != null) {
                 System.out.println(Arrays.toString(line));
