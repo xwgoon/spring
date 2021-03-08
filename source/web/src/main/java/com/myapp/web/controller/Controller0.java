@@ -1,5 +1,6 @@
 package com.myapp.web.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.myapp.data.model.Address;
 import com.myapp.data.model.User;
 import com.myapp.service.util.excel.ExcelUtil;
@@ -46,6 +47,9 @@ public class Controller0 {
     public void get0(HttpServletRequest httpServletRequest,
                      HttpServletResponse httpServletResponse) {
 
+        String str=JSON.toJSONString(httpServletRequest);
+
+
 //        RequestContext requestContext=new RequestContext(httpServletRequest,httpServletResponse);
 //        System.out.println(requestContext.getLocale());
 //        System.out.println(requestContext.getTimeZone());
@@ -59,7 +63,7 @@ public class Controller0 {
 //        System.out.println(address.getId());
 //        return new User("张三123");
 
-        ExcelUtil.exportExcel(null);
+//        ExcelUtil.exportExcel(null);
     }
 
     @GetMapping("get1")

@@ -47,13 +47,13 @@
     <!--</mvc:interceptors>-->
 
     <!--若当前不支持websocket，使用的是jsonp方式，则须设置allowed-origins="*"-->
-    <websocket:handlers allowed-origins="*">
+<!--    <websocket:handlers allowed-origins="*">
         <websocket:mapping path="/ws" handler="myWebSocketHandler"/>
         <websocket:handshake-interceptors>
             <bean class="com.myapp.web.websocket.MyHandshakeInterceptor"/>
         </websocket:handshake-interceptors>
-        <websocket:sockjs/>
-    </websocket:handlers>
+        &lt;!&ndash;<websocket:sockjs/>&ndash;&gt; &lt;!&ndash;前端使用SockJS时才能加该配置，使用socket.io不能加&ndash;&gt;
+    </websocket:handlers>-->
 
     <bean id="myWebSocketHandler" class="com.myapp.web.websocket.MyWebSocketHandler"/>
 

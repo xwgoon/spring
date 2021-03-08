@@ -9,3 +9,6 @@ web/build
 /web/src/main/resources/rebel.xml
 /rebel.xml
 /.idea/
+/data/build/
+/service/build/
+
