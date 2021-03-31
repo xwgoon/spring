@@ -41,6 +41,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -54,6 +56,8 @@ import static com.myapp.service.util.file.FileUtil.PropConstant_FILE_DOWNLOAD_UR
 public class ExcelUtil {
 
     private static final DataFormatter DATA_FORMATTER = new DataFormatter();
+
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     /**
      * Dummy formula evaluator that does nothing.
@@ -383,6 +387,26 @@ public class ExcelUtil {
 
     public static BigDecimal getBigDecimalCellValue(Row row, int cellNum) {
         return getBigDecimalCellValue(row, cellNum, null);
+    }
+
+    public static LocalDateTime getLocalDateTimeCellValue(Row row, int cellNum, String cellName) {
+        LocalDateTime dateTime;
+        Cell cell = row.getCell(cellNum);
+        if (cell.getCellType() == CellType.NUMERIC) {
+            dateTime = cell.getLocalDateTimeCellValue();
+        } else {
+            String datetime = getStringCellValue(row, cellNum, cellName);
+            dateTime = LocalDateTime.parse(datetime, DATE_TIME_FORMATTER);
+        }
+        if (cellName != null && dateTime == null) {
+            String msg = "导入失败！第" + (row.getRowNum() + 1) + "行的" + cellName + "不能为空";
+            throw new RuntimeException(msg);
+        }
+        return dateTime;
+    }
+
+    public static LocalDateTime getLocalDateTimeCellValue(Row row, int cellNum) {
+        return getLocalDateTimeCellValue(row, cellNum, null);
     }
 
     private static <T> T getCellValue(Row row, int cellNum, String cellName, Function<String, T> function) {

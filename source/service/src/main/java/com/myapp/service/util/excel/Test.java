@@ -1,5 +1,6 @@
 package com.myapp.service.util.excel;
 
+import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.*;
 
 import java.io.File;
@@ -12,11 +13,15 @@ import static com.myapp.service.util.excel.ExcelUtil.*;
 
 public class Test {
 
+    private static CellStyle steadyStyle;
+    private static CellStyle riseStyle;
+    private static CellStyle fallStyle;
+
     public static void main(String[] args) {
         Map<String, Student> studentMap = new HashMap<>();
 
         try {
-            File ykFile = new File("C:\\Users\\Administrator\\Desktop\\成绩\\月考.xlsx");
+            File ykFile = new File("C:\\Users\\Admin\\Desktop\\成绩\\上期.xls");
             try (Workbook workbook = WorkbookFactory.create(ykFile)) {
                 Sheet sheet = workbook.getSheetAt(0);
 
@@ -25,14 +30,15 @@ public class Test {
                     if (row == null) continue;
 
                     Student student = new Student();
-                    student.setName(getStringCellValue(row, 1));
-                    student.setYw(getIntegerCellValue(row, 3));
-                    student.setSx(getIntegerCellValue(row, 5));
-                    student.setYy(getIntegerCellValue(row, 7));
-                    student.setWl(getIntegerCellValue(row, 9));
-                    student.setHx(getIntegerCellValue(row, 11));
-                    student.setSw(getIntegerCellValue(row, 13));
-                    student.setZf(getIntegerCellValue(row, 15));
+                    student.setName(getStringCellValue(row, 3));
+//                    student.setYw(getIntegerCellValue(row, 3));
+//                    student.setSx(getIntegerCellValue(row, 5));
+//                    student.setYy(getIntegerCellValue(row, 7));
+//                    student.setWl(getIntegerCellValue(row, 9));
+//                    student.setHx(getIntegerCellValue(row, 11));
+//                    student.setSw(getIntegerCellValue(row, 13));
+//                    student.setZf(getIntegerCellValue(row, 15));
+                    student.setZf(getIntegerCellValue(row, 17));
 
                     studentMap.put(student.name, student);
                 }
@@ -42,13 +48,26 @@ public class Test {
             fail("文件导入失败");
         }
 
-        File bqFile = new File("C:\\Users\\Administrator\\Desktop\\成绩\\结果.xlsx");
+        File bqFile = new File("C:\\Users\\Admin\\Desktop\\成绩\\下期.xls");
         try (Workbook workbook = WorkbookFactory.create(bqFile)) {
             Sheet sheet = workbook.getSheetAt(0);
 
-            CellStyle cellStyle = workbook.createCellStyle();
-            cellStyle.cloneStyleFrom(sheet.getRow(2).getCell(2).getCellStyle());
-            for (int i = 2, lastRowNum = sheet.getLastRowNum(); i <= lastRowNum; i++) {
+            steadyStyle = workbook.createCellStyle();
+            steadyStyle.cloneStyleFrom(sheet.getRow(2).getCell(2).getCellStyle());
+
+            riseStyle = workbook.createCellStyle();
+            riseStyle.cloneStyleFrom(sheet.getRow(2).getCell(2).getCellStyle());
+            Font riseFont = workbook.createFont();
+            riseFont.setColor(HSSFColor.HSSFColorPredefined.RED.getIndex());
+            riseStyle.setFont(riseFont);
+
+            fallStyle = workbook.createCellStyle();
+            fallStyle.cloneStyleFrom(sheet.getRow(2).getCell(2).getCellStyle());
+            Font fallFont = workbook.createFont();
+            fallFont.setColor(HSSFColor.HSSFColorPredefined.GREEN.getIndex());
+            fallStyle.setFont(fallFont);
+
+            for (int i = 1, lastRowNum = sheet.getLastRowNum(); i <= lastRowNum; i++) {
                 Row row = sheet.getRow(i);
                 if (row == null) continue;
 
@@ -57,17 +76,17 @@ public class Test {
                 if (student == null) {
                     System.err.println(name);
                 } else {
-                    calc(row, 5, student.yw, cellStyle);
-                    calc(row, 8, student.sx, cellStyle);
-                    calc(row, 11, student.yy, cellStyle);
-                    calc(row, 14, student.wl, cellStyle);
-                    calc(row, 17, student.hx, cellStyle);
-                    calc(row, 20, student.sw, cellStyle);
-                    calc(row, 29, student.zf, cellStyle);
+//                    calc(row, 5, student.yw, cellStyle);
+//                    calc(row, 8, student.sx, cellStyle);
+//                    calc(row, 11, student.yy, cellStyle);
+//                    calc(row, 14, student.wl, cellStyle);
+//                    calc(row, 17, student.hx, cellStyle);
+//                    calc(row, 20, student.sw, cellStyle);
+                    calc(row, 17, student.zf);
                 }
             }
 
-            exportToFile(workbook, "C:\\Users\\Administrator\\Desktop\\成绩\\" + System.currentTimeMillis());
+            exportToFile(workbook, "C:\\Users\\Admin\\Desktop\\成绩\\" + System.currentTimeMillis());
         } catch (IOException e) {
             e.printStackTrace();
             fail("文件导入失败");
@@ -75,14 +94,21 @@ public class Test {
 
     }
 
-    private static void calc(Row row, int cellNum, int ykfs, CellStyle cellStyle) {
-        String result;
+    private static void calc(Row row, int cellNum, int ykfs) {
+        String result = "-";
+        CellStyle cellStyle = steadyStyle;
         String str = getStringCellValue(row, cellNum);
         if ("缺考".equals(str)) {
             result = "缺考";
         } else {
             int diff = Integer.parseInt(str) - ykfs;
-            result = diff < 0 ? ("↑" + Math.abs(diff)) : diff == 0 ? "-" : ("↓" + Math.abs(diff));
+            if (diff < 0) {
+                result = "↑" + Math.abs(diff);
+                cellStyle = riseStyle;
+            } else if (diff > 0) {
+                result = "↓" + Math.abs(diff);
+                cellStyle = fallStyle;
+            }
         }
 
         Cell cell = row.createCell(cellNum + 1);

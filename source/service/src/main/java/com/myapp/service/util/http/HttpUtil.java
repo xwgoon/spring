@@ -1,6 +1,5 @@
 package com.myapp.service.util.http;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
@@ -18,7 +17,9 @@ import org.apache.hc.core5.net.URIBuilder;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +29,10 @@ public class HttpUtil {
     private static final ContentType TEXT_PLAIN_UTF8 = ContentType.create("text/plain", StandardCharsets.UTF_8);
 
     public static String postForm(String uri, Map<String, Object> params) {
+        return postForm(uri, params, null);
+    }
+
+    public static String postForm(String uri, Map<String, Object> params, Map<String, String> headers) {
         HttpPost httpPost = new HttpPost(uri);
         if (params != null && params.size() > 0) {
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
@@ -41,23 +46,35 @@ public class HttpUtil {
             });
             httpPost.setEntity(builder.build());
         }
-
+        if (headers != null && headers.size() > 0) {
+            headers.forEach(httpPost::addHeader);
+        }
         return execute(httpPost);
     }
 
     public static String postJson(String uri, Map<String, Object> params) {
+        return postJson(uri, params, null);
+    }
+
+    public static String postJson(String uri, Map<String, Object> params, Map<String, String> headers) {
         HttpPost httpPost = new HttpPost(uri);
-        httpPost.setHeader("Content-type", "application/json;charset=UTF-8");
+        httpPost.addHeader("Content-type", "application/json;charset=UTF-8");
         if (params != null && params.size() > 0) {
             String jsonString = new JSONObject(params).toJSONString();
             StringEntity entity = new StringEntity(jsonString, TEXT_PLAIN_UTF8);
             httpPost.setEntity(entity);
         }
-
+        if (headers != null && headers.size() > 0) {
+            headers.forEach(httpPost::addHeader);
+        }
         return execute(httpPost);
     }
 
     public static String get(String uri, Map<String, Object> params) {
+        return get(uri, params, null);
+    }
+
+    public static String get(String uri, Map<String, Object> params, Map<String, String> headers) {
         try {
             URIBuilder builder = new URIBuilder(uri, StandardCharsets.UTF_8);
             if (params != null && params.size() > 0) {
@@ -67,6 +84,9 @@ public class HttpUtil {
                 });
             }
             HttpGet httpGet = new HttpGet(builder.build());
+            if (headers != null && headers.size() > 0) {
+                headers.forEach(httpGet::addHeader);
+            }
             return execute(httpGet);
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException(e);
@@ -91,10 +111,15 @@ public class HttpUtil {
     }
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws UnsupportedEncodingException {
         String uri;
         Map<String, Object> params = new HashMap<>();
         String res;
+
+        params.put("sorter","abxc");
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Cookie", "adfadfdsfdsfdfd");
+        postJson("http://localhost:8080/api/log_page", params,headers);
 
 
         /*uri = "http://localhost:8888/contextPath/xmlServletPath/controller0/post";
@@ -112,12 +137,16 @@ public class HttpUtil {
         params.put("uri", "apidata/api/gk/schoolSpecial/lists");
         res = postJson(uri, params);*/
 
-        uri = "https://static-data.eol.cn/www/2.0/schoolspecialindex/2019/140/51/1/1.json";
-        res = get(uri, null);
+//        uri = "http://api.map.baidu.com/geocoder/v2/?output=json&address=%E5%91%A8%E5%9F%AD%E6%9D%91%E5%A7%94%E4%BC%9A&city=%E6%B3%B0%E5%B7%9E%E5%B8%82&ak=6AebMREDLGyCvC3EAj4QgYVzDOtFVsMp";
+//
+//        res = URLEncoder.encode(uri, "UTF-8");
+//        System.out.println();
 
-
-        JSONObject resJo = JSON.parseObject(res);
-        System.out.println(resJo);
+//        res = get(uri, null);
+//
+//
+//        JSONObject resJo = JSON.parseObject(res);
+//        System.out.println(resJo);
     }
 
 }
