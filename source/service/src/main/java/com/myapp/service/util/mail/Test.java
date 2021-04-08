@@ -8,7 +8,9 @@ import javax.mail.internet.*;
 import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
-public class SampleMail {
+import static com.myapp.service.util.common.CommonUtil.DIR;
+
+public class Test {
 
     private static final String SMTP_HOST = "smtp.qq.com";
     private static final String SMTP_PORT = "587";
@@ -110,23 +112,22 @@ public class SampleMail {
             multipart.addBodyPart(messageBodyPart);
 
             messageBodyPart = new MimeBodyPart();
-            DataSource source = new FileDataSource("d://test1.txt");
+            DataSource source = new FileDataSource(DIR + "util/mail/测试文件.txt");
             messageBodyPart.setDataHandler(new DataHandler(source));
-            messageBodyPart.setFileName(MimeUtility.encodeWord("测试文件1.txt"));
+            messageBodyPart.setFileName(MimeUtility.encodeWord(source.getName()));
             multipart.addBodyPart(messageBodyPart);
 
-            messageBodyPart = new MimeBodyPart();
-            source = new FileDataSource("d://test2.txt");
-            messageBodyPart.setDataHandler(new DataHandler(source));
-            messageBodyPart.setFileName(MimeUtility.encodeWord("测试文件2.txt"));
-            multipart.addBodyPart(messageBodyPart);
+//            messageBodyPart = new MimeBodyPart();
+//            source = new FileDataSource("d://test2.txt");
+//            messageBodyPart.setDataHandler(new DataHandler(source));
+//            messageBodyPart.setFileName(MimeUtility.encodeWord("测试文件2.txt"));
+//            multipart.addBodyPart(messageBodyPart);
 
             message.setContent(multipart);
 
             Transport.send(message);
         } catch (MessagingException | UnsupportedEncodingException e) {
-            String err = e.getMessage();
-            System.out.println(err);
+            e.printStackTrace();
         }
     }
 
