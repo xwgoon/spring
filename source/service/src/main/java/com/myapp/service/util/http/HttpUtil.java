@@ -19,10 +19,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.myapp.service.util.common.CommonUtil.DIR;
 
 public class HttpUtil {
 
@@ -35,13 +36,17 @@ public class HttpUtil {
     public static String postForm(String uri, Map<String, Object> params, Map<String, String> headers) {
         HttpPost httpPost = new HttpPost(uri);
         if (params != null && params.size() > 0) {
-            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+            MultipartEntityBuilder builder = MultipartEntityBuilder.create()
+                    .setLaxMode().setCharset(StandardCharsets.UTF_8); // 解决文件名乱码问题
             params.forEach((key, value) -> {
-                if (value instanceof File) {
-                    builder.addBinaryBody(key, (File) value);
+                if (value instanceof Iterable) {
+                    ((Iterable<?>) value).forEach(it -> addBody(builder, key, it));
+                } else if (value.getClass().isArray()) {
+                    for (Object it : ((Object[]) value)) {
+                        addBody(builder, key, it);
+                    }
                 } else {
-                    String strVal = value == null ? null : value.toString();
-                    builder.addTextBody(key, strVal, TEXT_PLAIN_UTF8);
+                    addBody(builder, key, value);
                 }
             });
             httpPost.setEntity(builder.build());
@@ -50,6 +55,15 @@ public class HttpUtil {
             headers.forEach(httpPost::addHeader);
         }
         return execute(httpPost);
+    }
+
+    private static void addBody(MultipartEntityBuilder builder, String key, Object value) {
+        if (value instanceof File) {
+            builder.addBinaryBody(key, (File) value);
+        } else {
+            String strVal = value == null ? null : value.toString();
+            builder.addTextBody(key, strVal, TEXT_PLAIN_UTF8);
+        }
     }
 
     public static String postJson(String uri, Map<String, Object> params) {
@@ -79,8 +93,15 @@ public class HttpUtil {
             URIBuilder builder = new URIBuilder(uri, StandardCharsets.UTF_8);
             if (params != null && params.size() > 0) {
                 params.forEach((key, value) -> {
-                    String strVal = value == null ? null : value.toString();
-                    builder.addParameter(key, strVal);
+                    if (value instanceof Iterable) {
+                        ((Iterable<?>) value).forEach(it -> addParameter(builder, key, it));
+                    } else if (value.getClass().isArray()) {
+                        for (Object it : ((Object[]) value)) {
+                            addParameter(builder, key, it);
+                        }
+                    } else {
+                        addParameter(builder, key, value);
+                    }
                 });
             }
             HttpGet httpGet = new HttpGet(builder.build());
@@ -93,7 +114,17 @@ public class HttpUtil {
         }
     }
 
+    private static void addParameter(URIBuilder builder, String key, Object value) {
+        String strVal = value == null ? null : value.toString();
+        builder.addParameter(key, strVal);
+    }
+
     private static String execute(ClassicHttpRequest request) {
+        // 设置代理
+//        HttpHost httpHost = new HttpHost("http", "localhost", 8866);
+//        DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner(httpHost);
+//        try (CloseableHttpClient httpClient = HttpClients.custom().setRoutePlanner(routePlanner).build();
+
         try (CloseableHttpClient httpClient = HttpClients.createDefault();
              CloseableHttpResponse response = httpClient.execute(request)) {
             String resString = "";
@@ -116,11 +147,16 @@ public class HttpUtil {
         Map<String, Object> params = new HashMap<>();
         String res;
 
-        params.put("sorter","abxc");
-        Map<String, String> headers = new HashMap<>();
-        headers.put("Cookie", "adfadfdsfdsfdfd");
-        postJson("http://localhost:8080/api/log_page", params,headers);
-
+        params.put("smtpHost", "smtp.qq.com");
+        params.put("smtpPort", "587");
+        params.put("userName", "1510962196@qq.com");
+        params.put("password", "jnixndgfswuohcja");
+        params.put("to", new String[]{"1178124579@qq.com", "xiaowei_wyyx@163.com"});
+        params.put("subject", "测试邮件");
+        params.put("content", "<html><body><a href=\"https://www.baidu.com\">点我</a> 哈哈</body></html>");
+        params.put("files", new File(DIR + "util/mail/测试文件.txt"));
+        params.put("fileUrls", "https://ss0.baidu.com/7Po3dSag_xI4khGko9WTAnF6hhy/zhidao/pic/item/9c16fdfaaf51f3de9ba8ee1194eef01f3a2979a8.jpg");
+        postForm("http://192.168.80.64:9000/api/mail/send", params);
 
         /*uri = "http://localhost:8888/contextPath/xmlServletPath/controller0/post";
         File file = new File("C:\\Users\\Administrator\\Desktop\\导入模板.xlsx");
