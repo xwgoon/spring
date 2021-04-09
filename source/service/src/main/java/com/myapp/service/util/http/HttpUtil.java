@@ -158,6 +158,11 @@ public class HttpUtil {
         params.put("fileUrls", "https://ss0.baidu.com/7Po3dSag_xI4khGko9WTAnF6hhy/zhidao/pic/item/9c16fdfaaf51f3de9ba8ee1194eef01f3a2979a8.jpg");
         postForm("http://192.168.80.64:9000/api/mail/send", params);
 
+//        params.put("projectName", "ypdb");
+//        params.put("type", "11");
+////        params.put("file", new File(DIR + "util/mail/测试文件.txt"));
+//        System.out.println(postForm("https://fileapi.adas.com/file/PostUploadFile", params));
+
         /*uri = "http://localhost:8888/contextPath/xmlServletPath/controller0/post";
         File file = new File("C:\\Users\\Administrator\\Desktop\\导入模板.xlsx");
         params.put("name", "张三");
