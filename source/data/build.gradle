@@ -61,4 +61,6 @@ dependencies {
 
     compile group: 'com.opencsv', name: 'opencsv', version: '5.3'
 
+    compile group: 'javax.mail', name: 'mail', version: '1.4.7'
+
 }

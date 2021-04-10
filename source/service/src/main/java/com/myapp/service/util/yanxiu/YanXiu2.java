@@ -1,7 +1,7 @@
 package com.myapp.service.util.yanxiu;
 
 /*
- * 罗亚，未完成
+ * 罗亚，已完成
  * LUOYA512
  * @ly1995LY
  */
