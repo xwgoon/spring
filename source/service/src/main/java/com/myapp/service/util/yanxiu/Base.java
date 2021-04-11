@@ -61,7 +61,8 @@ public class Base {
                                     for (int j = 0; j < minutes; j++) {
                                         String url = "http://2020scxj.yanxiuonline.com/api/v1/activity/segmentParticipations/" + course.getString("id") + "/setStudyTime";
                                         String res = HttpUtil.postForm(url, null, headers);
-                                        if ("当前课程学习环节已达到最高时间要求不再计分".equals(JSON.parseObject(res).getString("error"))) {
+                                        String error = JSON.parseObject(res).getString("error");
+                                        if ("当前课程学习环节已达到最高时间要求不再计分".equals(error) || "已经提醒".equals(error)) {
                                             break;
                                         }
                                         System.out.println(LocalDateTime.now() + ": " + ++studySec);

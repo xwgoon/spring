@@ -1,19 +1,22 @@
 package com.myapp.service.util.http;
 
 import com.alibaba.fastjson.JSONObject;
-import org.apache.hc.client5.http.classic.methods.HttpGet;
-import org.apache.hc.client5.http.classic.methods.HttpPost;
-import org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.core5.http.ClassicHttpRequest;
-import org.apache.hc.core5.http.ContentType;
-import org.apache.hc.core5.http.HttpEntity;
-import org.apache.hc.core5.http.ParseException;
-import org.apache.hc.core5.http.io.entity.EntityUtils;
-import org.apache.hc.core5.http.io.entity.StringEntity;
-import org.apache.hc.core5.net.URIBuilder;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.ParseException;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,11 +26,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.myapp.service.util.common.CommonUtil.DIR;
-
 public class HttpUtil {
 
     private static final ContentType TEXT_PLAIN_UTF8 = ContentType.create("text/plain", StandardCharsets.UTF_8);
+
+    public static String postForm(String uri) {
+        return postForm(uri, null);
+    }
 
     public static String postForm(String uri, Map<String, Object> params) {
         return postForm(uri, params, null);
@@ -37,7 +42,7 @@ public class HttpUtil {
         HttpPost httpPost = new HttpPost(uri);
         if (params != null && params.size() > 0) {
             MultipartEntityBuilder builder = MultipartEntityBuilder.create()
-                    .setLaxMode().setCharset(StandardCharsets.UTF_8); // 解决文件名乱码问题
+                    .setMode(HttpMultipartMode.RFC6532); // 解决文件名乱码问题
             params.forEach((key, value) -> {
                 if (value instanceof Iterable) {
                     ((Iterable<?>) value).forEach(it -> addBody(builder, key, it));
@@ -66,6 +71,10 @@ public class HttpUtil {
         }
     }
 
+    public static String postJson(String uri) {
+        return postJson(uri, null);
+    }
+
     public static String postJson(String uri, Map<String, Object> params) {
         return postJson(uri, params, null);
     }
@@ -82,6 +91,10 @@ public class HttpUtil {
             headers.forEach(httpPost::addHeader);
         }
         return execute(httpPost);
+    }
+
+    public static String get(String uri) {
+        return get(uri, null);
     }
 
     public static String get(String uri, Map<String, Object> params) {
@@ -119,11 +132,11 @@ public class HttpUtil {
         builder.addParameter(key, strVal);
     }
 
-    private static String execute(ClassicHttpRequest request) {
+    private static String execute(HttpRequestBase request) {
         // 设置代理
-//        HttpHost httpHost = new HttpHost("http", "localhost", 8866);
-//        DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner(httpHost);
-//        try (CloseableHttpClient httpClient = HttpClients.custom().setRoutePlanner(routePlanner).build();
+//        HttpHost proxy = new HttpHost("127.0.0.1", 1087, "http");
+//        RequestConfig config = RequestConfig.custom().setProxy(proxy).build();
+//        request.setConfig(config);
 
         try (CloseableHttpClient httpClient = HttpClients.createDefault();
              CloseableHttpResponse response = httpClient.execute(request)) {
@@ -147,21 +160,22 @@ public class HttpUtil {
         Map<String, Object> params = new HashMap<>();
         String res;
 
-        params.put("smtpHost", "smtp.qq.com");
-        params.put("smtpPort", "587");
-        params.put("userName", "1510962196@qq.com");
-        params.put("password", "jnixndgfswuohcja");
-        params.put("to", new String[]{"1178124579@qq.com", "xiaowei_wyyx@163.com"});
-        params.put("subject", "测试邮件");
-        params.put("content", "<html><body><a href=\"https://www.baidu.com\">点我</a> 哈哈</body></html>");
-        params.put("files", new File(DIR + "util/mail/测试文件.txt"));
-        params.put("fileUrls", "https://ss0.baidu.com/7Po3dSag_xI4khGko9WTAnF6hhy/zhidao/pic/item/9c16fdfaaf51f3de9ba8ee1194eef01f3a2979a8.jpg");
-        postForm("http://192.168.80.64:9000/api/mail/send", params);
+//        params.put("smtpHost", "smtp.qq.com");
+//        params.put("smtpPort", "587");
+//        params.put("userName", "1510962196@qq.com");
+//        params.put("password", "jnixndgfswuohcja");
+//        params.put("to", new String[]{"1178124579@qq.com", "xiaowei_wyyx@163.com"});
+//        params.put("subject", "测试邮件");
+//        params.put("content", "<html><body><a href=\"https://www.baidu.com\">点我</a> 哈哈</body></html>");
+//        params.put("files", new File(DIR + "util/mail/测试文件.txt"));
+//        params.put("fileUrls", "https://ss0.baidu.com/7Po3dSag_xI4khGko9WTAnF6hhy/zhidao/pic/item/9c16fdfaaf51f3de9ba8ee1194eef01f3a2979a8.jpg");
+//        postForm("http://192.168.80.64:9000/api/mail/send", params);
 
 //        params.put("projectName", "ypdb");
 //        params.put("type", "11");
-////        params.put("file", new File(DIR + "util/mail/测试文件.txt"));
+//        params.put("file", new File(DIR + "util/mail/测试文件.txt"));
 //        System.out.println(postForm("https://fileapi.adas.com/file/PostUploadFile", params));
+//        System.out.println(postForm("http://localhost:8080/contextPath/xmlServletPath/controller1/postForm", params));
 
         /*uri = "http://localhost:8888/contextPath/xmlServletPath/controller0/post";
         File file = new File("C:\\Users\\Administrator\\Desktop\\导入模板.xlsx");
