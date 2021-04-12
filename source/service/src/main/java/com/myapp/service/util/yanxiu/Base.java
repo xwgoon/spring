@@ -79,6 +79,7 @@ public class Base {
                                 }
                             }
                         }
+                        courseNum = 1;
                     }
                 }
                 isFinished = true;

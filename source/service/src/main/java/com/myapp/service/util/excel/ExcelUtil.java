@@ -573,6 +573,20 @@ public class ExcelUtil {
 
         sheet.createFreezePane(0, 2); //固定前两行*/
 
+        // 删除某些行，包括合并单元格处理
+        /*List<Integer> removeRegions = new ArrayList<>();
+        for (int i = 0; i < sheet.getNumMergedRegions(); i++) {
+            CellRangeAddress range = sheet.getMergedRegion(i);
+            if (range.getFirstRow() >= 20 && range.getLastRow() <= 25 &&
+                    range.getFirstColumn() >= 1 && range.getLastColumn() <= 2) {
+//                        sheet.removeMergedRegion(i); //不能一边遍历一边删除
+                removeRegions.add(i);
+            }
+        }
+        sheet.removeMergedRegions(removeRegions);
+        sheet.shiftRows(26, sheet.getLastRowNum(), -6);
+        sheet.addMergedRegion(new CellRangeAddress(9, 19, 0, 0));*/
+
 //        ExcelUtil.exportToResponse(workbook, "用户列表");
         ExcelUtil.exportToFile(workbook, "/Users/xw/Desktop/测试/" + System.currentTimeMillis());
     }
