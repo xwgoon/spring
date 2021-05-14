@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+
+import static com.myapp.service.util.common.CommonUtil.DIR;
 
 public class Md5Test {
 
@@ -15,11 +18,16 @@ public class Md5Test {
         String str = "ILoveJava";
         String result = "35454B055CC325EA1AF2126E27707052";
 //        String hash = md5(str);
-        String hash = md5(new File("C:\\Users\\Administrator\\Desktop\\manager_library_detail_0.xlsx"));
+        String hash = md5(new File(DIR+"util/md5/test.txt"));
         System.out.println(hash);
-        String hash2 = md5(new File("C:\\Users\\Administrator\\Desktop\\manager_library_detail_1.xlsx"));
-        System.out.println(hash2);
-        System.out.println(hash.equals(hash2));
+//        String hash2 = md5(new File("C:\\Users\\Administrator\\Desktop\\manager_library_detail_1.xlsx"));
+//        System.out.println(hash2);
+//        System.out.println(hash.equals(hash2));
+
+//        System.out.println(LocalDateTime.now().getNano());
+//        System.out.println(LocalDateTime.now().withNano(0).getNano());
+
+
 
     }
 

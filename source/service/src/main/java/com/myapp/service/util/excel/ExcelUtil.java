@@ -41,12 +41,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static com.myapp.service.util.common.CommonUtil.checkNotEmpty;
 import static com.myapp.service.util.common.CommonUtil.fail;
@@ -150,6 +152,32 @@ public class ExcelUtil {
             OutputStream out = response.getOutputStream();
             workbook.write(out);
             out.flush();
+            workbook.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new ServiceException(ResponseConstant.BUSINESS_ERR, "导出失败");
+        }
+    }
+
+    public static void exportToFile1(Workbook workbook, String filePath, String fileName) {
+        try {
+            Path parentPath = Paths.get(filePath);
+            Files.createDirectories(parentPath);
+            List<Path> filePaths = Files.list(parentPath).collect(Collectors.toList());
+            if (filePaths.size() > 0) {
+                String finalFileName = fileName;
+                long count = filePaths.stream().filter(it -> it.getFileName().toString().contains(finalFileName)).count();
+                if (count > 0) {
+                    fileName = fileName + "_" + (count + 1);
+                }
+            }
+
+            String fileFullPath = filePath + "/" + fileName + getExcelExtension(workbook);
+            Path path = Paths.get(fileFullPath);
+            Files.createFile(path);
+            try (OutputStream out = new FileOutputStream(fileFullPath)) {
+                workbook.write(out);
+            }
             workbook.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -389,14 +417,14 @@ public class ExcelUtil {
         return getBigDecimalCellValue(row, cellNum, null);
     }
 
-    public static LocalDateTime getLocalDateTimeCellValue(Row row, int cellNum, String cellName) {
+    public static LocalDateTime getLocalDateTimeCellValue(Row row, int cellNum, DateTimeFormatter formatter, String cellName) {
         LocalDateTime dateTime;
         Cell cell = row.getCell(cellNum);
         if (cell.getCellType() == CellType.NUMERIC) {
             dateTime = cell.getLocalDateTimeCellValue();
         } else {
-            String datetime = getStringCellValue(row, cellNum, cellName);
-            dateTime = LocalDateTime.parse(datetime, DATE_TIME_FORMATTER);
+            String str = getStringCellValue(row, cellNum, cellName);
+            dateTime = StringUtils.isBlank(str) ? null : LocalDateTime.parse(str, formatter);
         }
         if (cellName != null && dateTime == null) {
             String msg = "导入失败！第" + (row.getRowNum() + 1) + "行的" + cellName + "不能为空";
@@ -405,13 +433,54 @@ public class ExcelUtil {
         return dateTime;
     }
 
-    public static LocalDateTime getLocalDateTimeCellValue(Row row, int cellNum) {
-        return getLocalDateTimeCellValue(row, cellNum, null);
+    public static LocalDateTime getLocalDateTimeCellValue(Row row, int cellNum, DateTimeFormatter formatter) {
+        return getLocalDateTimeCellValue(row, cellNum, formatter, null);
+    }
+
+    public static LocalDate getLocalDateCellValue(Row row, int cellNum, DateTimeFormatter formatter, String cellName) {
+        LocalDate date;
+        Cell cell = row.getCell(cellNum);
+        if (cell.getCellType() == CellType.NUMERIC) {
+            date = cell.getLocalDateTimeCellValue().toLocalDate();
+        } else {
+            String str = getStringCellValue(row, cellNum, cellName);
+            date = StringUtils.isBlank(str) ? null : LocalDate.parse(str, formatter);
+        }
+        if (cellName != null && date == null) {
+            String msg = "导入失败！第" + (row.getRowNum() + 1) + "行的" + cellName + "不能为空";
+            throw new RuntimeException(msg);
+        }
+        return date;
+    }
+
+    public static LocalDate getLocalDateCellValue(Row row, int cellNum, DateTimeFormatter formatter) {
+        return getLocalDateCellValue(row, cellNum, formatter, null);
+    }
+
+    public static String getLocalDateStringCellValue(Row row, int cellNum, DateTimeFormatter formatter) {
+        return getLocalDateStringCellValue(row, cellNum, formatter, null);
+    }
+
+    public static String getLocalDateStringCellValue(Row row, int cellNum, DateTimeFormatter formatter, String cellName) {
+        LocalDate date = getLocalDateCellValue(row, cellNum, formatter, cellName);
+        return date == null ? "" : formatter.format(date);
     }
 
     private static <T> T getCellValue(Row row, int cellNum, String cellName, Function<String, T> function) {
         String stringValue = getStringCellValue(row, cellNum, cellName);
         return StringUtils.isBlank(stringValue) ? null : function.apply(stringValue);
+    }
+
+    private static Workbook getTemplate() {
+        File file = new File("原始数据/工资模板.xlsx");
+        try {
+//            Workbook workbook = WorkbookFactory.create(file); //此种方式会改变xlsx模板文件
+            InputStream inputStream = new FileInputStream(file);
+            return new SXSSFWorkbook(new XSSFWorkbook(inputStream));
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("获取模板失败！");
+        }
     }
 
 
@@ -532,6 +601,12 @@ public class ExcelUtil {
             row.createCell(++cellNum).setCellValue(item.getName());
             row.createCell(++cellNum).setCellValue(sexMap.get(item.getSex()));
             row.createCell(++cellNum).setCellValue(formatNull(item.getAge()));
+
+            //设置公式
+            /*int n = rowNum + 1;
+            String formula = String.format("A%1$d+B%1$d", n); //A+B
+            row.createCell(++cellNum).setCellFormula(formula);*/
+
 //            ExcelUtil.addPicture(workbook, creationHelper, drawing, rowNum, ++cellNum, item.getAvatar());
         }
 
@@ -586,6 +661,10 @@ public class ExcelUtil {
         sheet.removeMergedRegions(removeRegions);
         sheet.shiftRows(26, sheet.getLastRowNum(), -6);
         sheet.addMergedRegion(new CellRangeAddress(9, 19, 0, 0));*/
+
+        //计算公式
+        /*FormulaEvaluator formulaEvaluator = workbook.getCreationHelper().createFormulaEvaluator();
+        formulaEvaluator.evaluateAll();*/
 
 //        ExcelUtil.exportToResponse(workbook, "用户列表");
         ExcelUtil.exportToFile(workbook, "/Users/xw/Desktop/测试/" + System.currentTimeMillis());
